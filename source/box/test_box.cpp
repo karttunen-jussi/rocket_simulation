@@ -1,10 +1,10 @@
 #include <catch2/catch_all.hpp>
 
-#include "box_volume.hpp"
+#include "box.hpp"
 
 using namespace Catch::Matchers;
 
-TEST_CASE("Box volume calculation")
+TEST_CASE("Box volume calculation with free functions")
 {
     SECTION("Recommended approach using Designated Initializers feature to give function arguments")
     {
@@ -64,5 +64,34 @@ TEST_CASE("Box volume calculation")
         constexpr double error_margin = 1.0e-6;
         REQUIRE_THAT(volume1, WithinAbs(volume2, error_margin));
         REQUIRE_THAT(volume2, WithinAbs(volume3, error_margin));
+    }
+}
+
+TEST_CASE("Box class testing")
+{
+    SECTION("Recommended approach using Designated Initializers feature to give function arguments")
+    {
+        constexpr double length = 1.0;
+        constexpr double width  = 2.0;
+        constexpr double height = 3.0;
+
+        // It is possible to give the struct as a class constructor argument directly without creating a variable
+        const Box_t box1{
+            {.length = length,
+             .width  = width,
+             .height = height}
+        };
+
+        // Or creating a variable for it works of course as well
+        constexpr BoxDimensions_t dimensions = {.length = length,
+                                                .width  = width,
+                                                .height = height};
+        const Box_t box2{dimensions};
+
+        constexpr double expected_volume = length * width * height;
+        constexpr double error_margin    = 1.0e-6;
+
+        REQUIRE_THAT(box1.GetVolume(), WithinAbs(expected_volume, error_margin));
+        REQUIRE_THAT(box2.GetVolume(), WithinAbs(expected_volume, error_margin));
     }
 }

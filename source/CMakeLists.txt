@@ -1,3 +1,3 @@
 add_subdirectory(hello)
 add_subdirectory(sine_wave)
-add_subdirectory(box_volume)
+add_subdirectory(box)
