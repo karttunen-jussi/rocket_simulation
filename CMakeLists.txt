@@ -7,17 +7,21 @@ project("SmallExamples"
 set(CMAKE_CXX_STANDARD "23")
 set(CMAKE_CXX_EXTENSIONS "OFF")
 
-add_compile_options(-Wall -Wextra -Wpedantic -Werror -pedantic-errors)
-
-add_compile_options(-O2 -g2)
+add_compile_options(
+        -O2
+        -g2
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Werror
+        -pedantic-errors
+        -fdiagnostics-color)
 
 set("CompileOptionsGccExhaustive"
-        -fdelete-null-pointer-checks
         -fimplicit-constexpr
         -fstrict-aliasing
         -fstrict-enums
         -ftrivial-auto-var-init=zero
-        -funsafe-loop-optimizations
         -Walloca
         -Walloc-zero
         -Warith-conversion
