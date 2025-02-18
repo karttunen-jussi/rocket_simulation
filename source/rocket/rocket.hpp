@@ -5,20 +5,19 @@
 #pragma once
 
 //---------------------------------------------------------------------------------------------------------------------
+// PUBLIC INCLUDE DIRECTIVES
+//---------------------------------------------------------------------------------------------------------------------
+
+#include "utility/numerical_integration.hpp"
+
+//---------------------------------------------------------------------------------------------------------------------
 // PUBLIC TYPE DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
 
 struct RocketPars_t
 {
-    double time_step_simulation_s = 0.0;
-    double mass_rocket_kg         = 0.0;
-};
-
-struct RocketState_t
-{
-    double distance_m        = 0.0;
-    double speed_m_s         = 0.0;
-    double acceleration_m_s2 = 0.0;
+    double time_step_simulation_s;
+    double mass_rocket_kg;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -29,27 +28,30 @@ class Rocket_t
 {
   public:
     Rocket_t(const RocketPars_t& pars) :
-        m_pars{pars}
+        m_mass_rocket_kg{pars.mass_rocket_kg},
+        m_distance_m{pars.time_step_simulation_s}
     {}
 
     void SetSpeed_m_s(const double speed_m_s)
     {
-        m_state.speed_m_s = speed_m_s;
+        m_speed_m_s = speed_m_s;
     }
 
     double UpdateDistance_m()
     {
-        // Distance is integral of speed (s = ∫vdt)
-        m_state.distance_m += m_state.speed_m_s * m_pars.time_step_simulation_s;
-        return m_state.distance_m;
+        // Distance is integral of speed
+        m_distance_m.UpdateIntegral(m_speed_m_s);
+        return m_distance_m.GetValue();
     }
 
     double GetDistance_m() const
     {
-        return m_state.distance_m;
+        return m_distance_m.GetValue();
     }
 
   private:
-    RocketPars_t m_pars;
-    RocketState_t m_state = {};
+    double m_mass_rocket_kg;
+    double m_acceleration_m_s2 = 0.0;
+    double m_speed_m_s         = 0.0;
+    Integrator_t m_distance_m;
 };

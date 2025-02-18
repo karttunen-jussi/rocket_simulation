@@ -23,7 +23,7 @@ int main()
     // Rocket simulation data points are logged into this csv file
     std::ofstream csv_file{"rocket_sim_data_points.csv"};
     // Write signal name header row into the file
-    csv_file << "Time[s]," << "Speed[m/s]" << "Distance[m]" << std::endl;
+    csv_file << "Time[s]," << "Speed[m/s]," << "Distance[m]" << std::endl;
 
     // Create the instance of the rocket class
     Rocket_t rocket{

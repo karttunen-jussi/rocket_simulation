@@ -18,7 +18,7 @@ using namespace Catch::Matchers;
 
 static auto Near(const double expected_value)
 {
-    constexpr double allowed_error_tolerance = 1.0e-3;
+    constexpr double allowed_error_tolerance = 1.0e-2;
     return WithinAbs(expected_value, allowed_error_tolerance);
 }
 

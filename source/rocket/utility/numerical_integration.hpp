@@ -8,10 +8,10 @@
 // PUBLIC CLASS DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
 
-class NumIntegrator
+class Integrator_t
 {
-public:
-    NumIntegrator(const double time_step_s):
+  public:
+    Integrator_t(const double time_step_s) :
         m_time_step_s{time_step_s}
     {}
 
@@ -27,7 +27,7 @@ public:
         return m_integrated_result;
     }
 
-private:
+  private:
     double m_time_step_s;
     double m_integrated_result = 0.0;
     double m_previous_input    = 0.0;
