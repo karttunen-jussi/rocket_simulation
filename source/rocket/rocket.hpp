@@ -16,8 +16,9 @@ struct RocketPars_t
 
 struct RocketState_t
 {
-    double distance_m = 0.0;
-    double speed_m_s  = 0.0;
+    double distance_m        = 0.0;
+    double speed_m_s         = 0.0;
+    double acceleration_m_s2 = 0.0;
 };
 
 //---------------------------------------------------------------------------------------------------------------------
