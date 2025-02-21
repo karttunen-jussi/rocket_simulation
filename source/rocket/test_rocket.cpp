@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 #include "rocket.hpp"
-
+#include "utility/sim_scheduler.hpp"
 #include <catch2/catch_all.hpp>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -30,27 +30,23 @@ TEST_CASE("Rocket traveled distance")
 {
     SECTION("With constant speed")
     {
-        constexpr double time_step_simulation_s = 1.0e-3;
-        constexpr double time_total_length_s    = 100.0;
+        constexpr double time_step_s     = 1.0e-3;
+        constexpr double time_interval_s = 100.0;
 
         constexpr double speed_rocket_m_s = 10.0;
 
         Rocket_t rocket{
-            {.time_step_simulation_s = time_step_simulation_s,
+            {.time_step_simulation_s = time_step_s,
              .mass_rocket_kg         = 1000.0}
         };
 
         rocket.SetSpeed_m_s(speed_rocket_m_s);
 
-        // Rocket travelling simulation loop
-        double time_elapsed_s = 0.0;
-        while (time_elapsed_s <= time_total_length_s)
-        {
-            rocket.UpdateDistance_m();
-            time_elapsed_s += time_step_simulation_s;
-        }
+        SimScheduler_t scheduler{time_step_s, std::bind(&Rocket_t::UpdateDistance_m, &rocket)};
 
-        constexpr double expected_distance_m = time_total_length_s * speed_rocket_m_s;
+        scheduler.RunSimulation(time_interval_s);
+
+        constexpr double expected_distance_m = time_interval_s * speed_rocket_m_s;
         REQUIRE_THAT(rocket.GetDistance_m(), Near(expected_distance_m));
     }
 }

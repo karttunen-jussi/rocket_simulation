@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-// Rocket
+// Simulation test scheduler
 //---------------------------------------------------------------------------------------------------------------------
 
 #pragma once
@@ -8,49 +8,48 @@
 // PUBLIC INCLUDE DIRECTIVES
 //---------------------------------------------------------------------------------------------------------------------
 
-#include "utility/numerical_integration.hpp"
+#include <functional>
 
 //---------------------------------------------------------------------------------------------------------------------
-// PUBLIC TYPE DEFINITIONS
+// PUBLIC (INLINE) FUNCTION DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
 
-struct RocketPars_t
+inline void RunSimulation(const double time_step_s,
+                          const double time_interval_s,
+                          const std::function<void()>& loop_function)
 {
-    double time_step_simulation_s;
-    double mass_rocket_kg;
-};
+    double time_elapsed_s = 0.0;
+    while (time_elapsed_s <= time_interval_s)
+    {
+        loop_function();
+        time_elapsed_s += time_step_s;
+    }
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 // PUBLIC CLASS DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
 
-class Rocket_t
+class SimScheduler_t
 {
   public:
-    Rocket_t(const RocketPars_t& pars) :
-        m_mass_rocket_kg{pars.mass_rocket_kg},
-        m_distance_m{pars.time_step_simulation_s}
+    SimScheduler_t(const double time_step_s,
+                   const std::function<void()>& loop_function) :
+        m_time_step_s{time_step_s},
+        m_loop_function{loop_function}
     {}
 
-    void SetSpeed_m_s(const double speed_m_s)
+    void RunSimulation(const double time_interval_s)
     {
-        m_speed_m_s = speed_m_s;
-    }
-
-    void UpdateDistance_m()
-    {
-        // Distance is integral of speed
-        m_distance_m.UpdateIntegral(m_speed_m_s);
-    }
-
-    double GetDistance_m() const
-    {
-        return m_distance_m.GetValue();
+        double time_elapsed_s = 0.0;
+        while (time_elapsed_s <= time_interval_s)
+        {
+            m_loop_function();
+            time_elapsed_s += m_time_step_s;
+        }
     }
 
   private:
-    double m_mass_rocket_kg;
-    double m_acceleration_m_s2 = 0.0;
-    double m_speed_m_s         = 0.0;
-    Integrator_t m_distance_m;
+    double m_time_step_s;
+    std::function<void()> m_loop_function;
 };
