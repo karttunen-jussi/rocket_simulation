@@ -10,7 +10,8 @@ data = pd.read_csv(csv_file_path)
 # Set "Time[s]" as the x-axis data for the figure
 data.set_index("Time[s]", inplace=True)
 
-fig, axes = plt.subplots(2, 1, sharex=True)
+number_of_subplots = len(data.columns)
+fig, axes = plt.subplots(number_of_subplots, 1, sharex=True)
 fig.set_tight_layout(True)
 
 for i, signal in enumerate(data.columns):

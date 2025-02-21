@@ -8,6 +8,7 @@
 
 #include "rocket.hpp"
 #include "utility/sim_scheduler.hpp"
+
 #include <catch2/catch_all.hpp>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -18,35 +19,45 @@ using namespace Catch::Matchers;
 
 static auto Near(const double expected_value)
 {
-    constexpr double allowed_error_tolerance = 1.0e-2;
-    return WithinAbs(expected_value, allowed_error_tolerance);
+    constexpr double allowed_relative_error = 1.0e-4;
+    return WithinRel(expected_value, allowed_relative_error);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 // TEST CASE DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
 
-TEST_CASE("Rocket traveled distance")
+TEST_CASE("Rocket kinetic energy")
 {
-    SECTION("With constant speed")
+    SECTION("With constant power")
     {
         constexpr double time_step_s     = 1.0e-3;
         constexpr double time_interval_s = 100.0;
-
-        constexpr double speed_rocket_m_s = 10.0;
+        constexpr double mass_rocket_kg  = 1000.0;
+        constexpr double power_rocket_kW = 10.0;
 
         Rocket_t rocket{
-            {.time_step_simulation_s = time_step_s,
-             .mass_rocket_kg         = 1000.0}
+            {.time_step_s    = time_step_s,
+             .mass_rocket_kg = mass_rocket_kg}
         };
 
-        rocket.SetSpeed_m_s(speed_rocket_m_s);
+        // Define the simulation loop function
+        auto SimulationLoopFunc = [&rocket]()
+        {
+            rocket.UpdateState(power_rocket_kW);
+        };
 
-        SimScheduler_t scheduler{time_step_s, std::bind(&Rocket_t::UpdateDistance_m, &rocket)};
-
+        // Create scheduler and run the simlation
+        SimScheduler_t scheduler{time_step_s, SimulationLoopFunc};
         scheduler.RunSimulation(time_interval_s);
 
-        constexpr double expected_distance_m = time_interval_s * speed_rocket_m_s;
-        REQUIRE_THAT(rocket.GetDistance_m(), Near(expected_distance_m));
+        // Expected kinetic energy of the rocket with constant power should be E = P*t
+        constexpr double expected_energy_J = time_interval_s * power_rocket_kW * convert_kW_to_W;
+
+        // Actual kinetic energy: E = 0.5*m*v^2
+        const double speed_m_s       = rocket.GetSpeed_m_s();
+        const double result_energy_J = 0.5 * mass_rocket_kg * std::pow(speed_m_s, 2.0);
+
+        REQUIRE_THAT(result_energy_J, Near(expected_energy_J));
     }
 }
