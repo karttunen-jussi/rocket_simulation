@@ -18,7 +18,7 @@ int main()
 {
     // Parameters for the creating the simulation data
     constexpr double time_step_s         = 1.0e-3;
-    constexpr double time_total_length_s = 1.0;
+    constexpr double time_total_length_s = 100.0;
     constexpr double mass_rocket_kg      = 1000.0;
 
     // Rocket simulation data points are logged into this csv file

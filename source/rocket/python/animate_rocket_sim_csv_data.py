@@ -15,29 +15,24 @@ number_of_subplots = len(data.columns)
 fig, axes = plt.subplots(number_of_subplots, 1, sharex=True)
 fig.set_tight_layout(True)
 
-# for i, signal in enumerate(data.columns):
-#    data.plot(ax=axes[i], y=signal)
-
-# ------------------------------------------------------------------------------------
 plt.xlabel("Time[s]")
 
 all_plot_line_objects = []
 for n in range(number_of_subplots):
     axis_of_subplot = axes[n]
-    line_object_for_signal = axis_of_subplot.plot([], [])
-    all_plot_line_objects.append(line_object_for_signal)
-    # axis_of_subplot.set_ylabel(ylabel_names_for_subplots[n])
-    # axis_of_subplot.legend(signal_names_in_subplot, loc='lower left')
+    line_object = axis_of_subplot.plot([], [])
+    all_plot_line_objects.append(line_object)
+    axis_of_subplot.set_ylabel(data.columns[n])
     axis_of_subplot.grid()
-
 
 # Update function for animation
 def UpdateAnimation(frame_number):
+    count_plotted_points = (frame_number + 1) * 100
     for n in range(number_of_subplots):
-        line_object_for_signal = all_plot_line_objects[n]
-        signal_data = data[n][:frame_number * 10]
-        time_data = data.index[:frame_number * 10]
-        line_object_for_signal[0].set_data(time_data, signal_data)
+        line_object = all_plot_line_objects[n]
+        signal_data = data.iloc[0:count_plotted_points, n]
+        time_data   = data.index[0:count_plotted_points]
+        line_object[0].set_data(time_data, signal_data)
 
     for k in range(number_of_subplots):
         axis_of_subplot = axes[k]
@@ -47,9 +42,8 @@ def UpdateAnimation(frame_number):
 
     return all_plot_line_objects
 
-
 # Animate the plot
-ani = animation.FuncAnimation(fig, UpdateAnimation, blit=False, interval=300)
+ani = animation.FuncAnimation(fig, UpdateAnimation, blit=False, interval=100)
 
 # Display the plot
 plt.show()
