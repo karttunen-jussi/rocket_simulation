@@ -44,7 +44,10 @@ TEST_CASE("Rocket kinetic energy")
         // Define the simulation loop function
         auto SimulationLoopFunc = [&rocket]()
         {
-            rocket.UpdateState(power_rocket_kW);
+            const XyVector_t power_xy_kW = {.x_axis = power_rocket_kW,
+                                            .y_axis = 0.0};
+
+            rocket.UpdateState(power_xy_kW);
         };
 
         // Create scheduler and run the simlation
@@ -55,7 +58,7 @@ TEST_CASE("Rocket kinetic energy")
         constexpr double expected_energy_J = time_interval_s * power_rocket_kW * convert_kW_to_W;
 
         // Actual kinetic energy: E = 0.5*m*v^2
-        const double speed_m_s       = rocket.GetSpeed_m_s();
+        const double speed_m_s       = rocket.GetSpeed_m_s().x_axis;
         const double result_energy_J = 0.5 * mass_rocket_kg * std::pow(speed_m_s, 2.0);
 
         REQUIRE_THAT(result_energy_J, Near(expected_energy_J));

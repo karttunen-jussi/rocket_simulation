@@ -26,10 +26,10 @@ int main()
 
     // Write signal name header row into the file
     csv_file << "Time[s],"
-             << "Force[N],"
-             << "Acceleration[m/s2],"
-             << "Speed[m/s],"
-             << "Position[m]"
+             << "Speed_x[m/s],"
+             << "Speed_y[m/s],"
+             << "Position_x[m],"
+             << "Position_y[m]"
              << std::endl;
 
     // Create the instance of the rocket class
@@ -43,15 +43,20 @@ int main()
     while (time_elapsed_s <= time_total_length_s)
     {
         // Update position of the rocket at every time step
-        constexpr double power_kW = 10.0;
+        const XyVector_t power_kW = {.x_axis = 10.0,
+                                     .y_axis = 5.0};
+
         rocket.UpdateState(power_kW);
+
+        const XyVector_t position_m = rocket.GetPosition_m();
+        const XyVector_t speed_m_s  = rocket.GetSpeed_m_s();
 
         // Write the data points into the csv file
         csv_file << time_elapsed_s << ","
-                 << rocket.GetForce_N() << ","
-                 << rocket.GetAcceleration_m_s2() << ","
-                 << rocket.GetSpeed_m_s() << ","
-                 << rocket.GetPosition_m() << std::endl;
+                 << speed_m_s.x_axis << ","
+                 << speed_m_s.y_axis << ","
+                 << position_m.x_axis << ","
+                 << position_m.y_axis << std::endl;
 
         // Increment elapsed time forward
         time_elapsed_s += time_step_s;

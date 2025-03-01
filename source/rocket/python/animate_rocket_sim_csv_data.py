@@ -43,7 +43,7 @@ def UpdateAnimation(frame_number):
     return all_plot_line_objects
 
 # Animate the plot
-ani = animation.FuncAnimation(fig, UpdateAnimation, blit=False, interval=100)
+ani = animation.FuncAnimation(fig, UpdateAnimation, blit=False, interval=100, cache_frame_data=False)
 
 # Display the plot
 plt.show()

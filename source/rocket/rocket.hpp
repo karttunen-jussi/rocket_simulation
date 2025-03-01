@@ -11,6 +11,7 @@
 #include "utility/numerical_integration.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -19,7 +20,7 @@
 
 inline constexpr double convert_kW_to_W = 1000.0;
 
-// Converting power to force requires diving by speed. Speed values smaller than this limit are saturated 
+// Converting power to force requires diving by speed. Speed values smaller than this limit are saturated
 // to prevent force approaching infinity near zero speeds.
 inline constexpr double saturation_limit_division_near_zero = 0.1;
 
@@ -33,6 +34,15 @@ struct RocketPars_t
     double mass_rocket_kg;
 };
 
+struct XyVector_t
+{
+    double x_axis;
+    double y_axis;
+};
+
+using DoubleArray_t     = std::array<double, 2>;
+using IntegratorArray_t = std::array<Integrator_t, 2>;
+
 //---------------------------------------------------------------------------------------------------------------------
 // PUBLIC CLASS DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
@@ -42,53 +52,48 @@ class Rocket_t
   public:
     Rocket_t(const RocketPars_t& pars) :
         m_mass_rocket_kg{pars.mass_rocket_kg},
-        m_speed_m_s{pars.time_step_s},
-        m_position_m{pars.time_step_s}
+        m_speed_m_s{{{pars.time_step_s}, {pars.time_step_s}}},
+        m_position_m{{{pars.time_step_s}, {pars.time_step_s}}}
     {}
 
-    void UpdateState(const double power_kW)
+    void UpdateState(const XyVector_t& power_kW)
     {
-        // Limit the near zero speed values to prevent force approaching infinity near zero speeds. 
-        const double speed_abs_m_s     = std::abs(m_speed_m_s.GetValue());
-        const double speed_bounded_m_s = std::max(speed_abs_m_s, saturation_limit_division_near_zero);
+        const DoubleArray_t power_array_kW = {power_kW.x_axis, power_kW.y_axis};
 
-        // Force is power divided by speed. Note that bounded speed is used in divider.
-        m_force_N = (power_kW * convert_kW_to_W) / speed_bounded_m_s;
+        for (unsigned int i = 0u; i < 2u; i++)
+        {
+            // Limit the near zero speed values to prevent force approaching infinity near zero speeds.
+            const double speed_abs_m_s     = std::abs(m_speed_m_s[i].GetValue());
+            const double speed_bounded_m_s = std::max(speed_abs_m_s, saturation_limit_division_near_zero);
 
-        // Acceleration is force divided by mass (because F = m*a)
-        m_acceleration_m_s2 = m_force_N / m_mass_rocket_kg;
+            // Force is power divided by speed. Note that bounded speed is used in divider.
+            const double force_N = (power_array_kW[i] * convert_kW_to_W) / speed_bounded_m_s;
 
-        // Speed is integral of acceleration
-        m_speed_m_s.UpdateIntegral(m_acceleration_m_s2);
+            // Acceleration is force divided by mass (because F = m*a)
+            const double acceleration_m_s2 = force_N / m_mass_rocket_kg;
 
-        // Position is integral of speed
-        m_position_m.UpdateIntegral(m_speed_m_s.GetValue());
+            // Speed is integral of acceleration
+            m_speed_m_s[i].UpdateIntegral(acceleration_m_s2);
+
+            // Position is integral of speed
+            m_position_m[i].UpdateIntegral(m_speed_m_s[i].GetValue());
+        }
     }
 
-    double GetPosition_m() const
+    XyVector_t GetPosition_m() const
     {
-        return m_position_m.GetValue();
+        return {.x_axis = m_position_m[0].GetValue(),
+                .y_axis = m_position_m[1].GetValue()};
     }
 
-    double GetSpeed_m_s() const
+    XyVector_t GetSpeed_m_s() const
     {
-        return m_speed_m_s.GetValue();
-    }
-
-    double GetAcceleration_m_s2() const
-    {
-        return m_acceleration_m_s2;
-    }
-
-    double GetForce_N() const
-    {
-        return m_force_N;
+        return {.x_axis = m_speed_m_s[0].GetValue(),
+                .y_axis = m_speed_m_s[1].GetValue()};
     }
 
   private:
     double m_mass_rocket_kg;
-    double m_force_N           = 0.0;
-    double m_acceleration_m_s2 = 0.0;
-    Integrator_t m_speed_m_s;
-    Integrator_t m_position_m;
+    IntegratorArray_t m_speed_m_s;
+    IntegratorArray_t m_position_m;
 };
