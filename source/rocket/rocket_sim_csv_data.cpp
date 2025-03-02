@@ -7,6 +7,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 #include "rocket.hpp"
+#include "utility/command_sequence.hpp"
 
 #include <fstream>
 
@@ -18,7 +19,7 @@ int main()
 {
     // Parameters for the creating the simulation data
     constexpr double time_step_s         = 1.0e-3;
-    constexpr double time_total_length_s = 100.0;
+    constexpr double time_total_length_s = 160.0;
     constexpr double mass_rocket_kg      = 1000.0;
 
     // Rocket simulation data points are logged into this csv file
@@ -32,6 +33,27 @@ int main()
              << "Position_y[m]"
              << std::endl;
 
+    // Define power input command sequence for the rocket
+    CommandGenerator_t power_sequence_x_axis_kw{
+        {{.time_s = 0.0, .value = 10.0},
+         {.time_s = 10.0, .value = -10.0},
+         {.time_s = 20.0, .value = 0.0},
+         {.time_s = 40.0, .value = -10.0},
+         {.time_s = 50.0, .value = 10.0},
+         {.time_s = 60.0, .value = 0.0},
+         {.time_s = 80.0, .value = 0.0}}
+    };
+
+    CommandGenerator_t power_sequence_y_axis_kw{
+        {{.time_s = 0.0, .value = 0.0},
+         {.time_s = 20.0, .value = 10.0},
+         {.time_s = 30.0, .value = -10.0},
+         {.time_s = 40.0, .value = 0.0},
+         {.time_s = 60.0, .value = -10.0},
+         {.time_s = 70.0, .value = 10.0},
+         {.time_s = 80.0, .value = 0.0}}
+    };
+
     // Create the instance of the rocket class
     Rocket_t rocket{
         {.time_step_s    = time_step_s,
@@ -43,8 +65,8 @@ int main()
     while (time_elapsed_s <= time_total_length_s)
     {
         // Update position of the rocket at every time step
-        const XyVector_t power_kW = {.x_axis = 10.0,
-                                     .y_axis = 5.0};
+        const XyVector_t power_kW = {.x_axis = power_sequence_x_axis_kw.GetCommand(time_elapsed_s),
+                                     .y_axis = power_sequence_y_axis_kw.GetCommand(time_elapsed_s)};
 
         rocket.UpdateState(power_kW);
 
