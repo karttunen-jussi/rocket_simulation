@@ -8,6 +8,7 @@
 
 #include "rocket.hpp"
 #include "utility/command_sequence.hpp"
+#include "utility/sim_scheduler.hpp"
 
 #include <fstream>
 
@@ -60,9 +61,8 @@ int main()
          .mass_rocket_kg = mass_rocket_kg}
     };
 
-    // Rocket travelling simulation loop
-    double time_elapsed_s = 0.0;
-    while (time_elapsed_s <= time_total_length_s)
+    // Define the simulation loop function
+    auto SimLoopFunc = [&](const double time_elapsed_s)
     {
         // Update position of the rocket at every time step
         const XyVector_t power_kW = {.x_axis = power_sequence_x_axis_kw.GetCommand(time_elapsed_s),
@@ -79,10 +79,11 @@ int main()
                  << speed_m_s.y_axis << ","
                  << position_m.x_axis << ","
                  << position_m.y_axis << std::endl;
+    };
 
-        // Increment elapsed time forward
-        time_elapsed_s += time_step_s;
-    }
+    // Create scheduler and run the simulation
+    SimScheduler_t scheduler{time_step_s, SimLoopFunc};
+    scheduler.RunSimulation(time_total_length_s);
 
     // Remember to close the file handle when done
     csv_file.close();
