@@ -36,7 +36,7 @@ int main()
 
     // Define power input command sequence for the rocket
     CommandGenerator_t power_sequence_x_axis_kw{
-        {{.time_s = 0.0, .value = 10.0},
+        {{.time_s = 0.0,  .value = 10.0},
          {.time_s = 10.0, .value = -10.0},
          {.time_s = 20.0, .value = 0.0},
          {.time_s = 40.0, .value = -10.0},
@@ -46,7 +46,7 @@ int main()
     };
 
     CommandGenerator_t power_sequence_y_axis_kw{
-        {{.time_s = 0.0, .value = 0.0},
+        {{.time_s = 0.0,  .value = 0.0},
          {.time_s = 20.0, .value = 10.0},
          {.time_s = 30.0, .value = -10.0},
          {.time_s = 40.0, .value = 0.0},

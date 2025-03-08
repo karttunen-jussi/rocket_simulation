@@ -19,13 +19,25 @@ target_link_libraries(${TestName}
         Catch2::Catch2WithMain)
 
 #----------------------------------------------------------------------------------------------------------------------
-# Executable target
+# Simulation executable target
 #----------------------------------------------------------------------------------------------------------------------
-set(ExecutableName "SimulateRocket")
+set(SimExecutableName "SimulateRocket")
 
-add_executable(${ExecutableName}
+add_executable(${SimExecutableName}
         rocket_sim_csv_data.cpp)
 
-target_compile_options(${ExecutableName}
+target_compile_options(${SimExecutableName}
+        PRIVATE
+        ${CompileOptionsGccExhaustive})
+
+#----------------------------------------------------------------------------------------------------------------------
+# Real-time thread executable target
+#----------------------------------------------------------------------------------------------------------------------
+set(ThreadExecutableName "ExecuteRocketThread")
+
+add_executable(${ThreadExecutableName}
+        rocket_real_time_thread.cpp)
+
+target_compile_options(${ThreadExecutableName}
         PRIVATE
         ${CompileOptionsGccExhaustive})
