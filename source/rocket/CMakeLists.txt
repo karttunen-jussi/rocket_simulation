@@ -21,23 +21,34 @@ target_link_libraries(${TestName}
 #----------------------------------------------------------------------------------------------------------------------
 # Simulation executable target
 #----------------------------------------------------------------------------------------------------------------------
-set(SimExecutableName "SimulateRocket")
-
-add_executable(${SimExecutableName}
+add_executable("SimulateRocket"
         rocket_sim_csv_data.cpp)
 
-target_compile_options(${SimExecutableName}
+target_compile_options("SimulateRocket"
         PRIVATE
         ${CompileOptionsGccExhaustive})
 
 #----------------------------------------------------------------------------------------------------------------------
 # Real-time thread executable target
 #----------------------------------------------------------------------------------------------------------------------
-set(ThreadExecutableName "ExecuteRocketThread")
-
-add_executable(${ThreadExecutableName}
+add_executable("RocketSimThread"
         rocket_real_time_thread.cpp)
 
-target_compile_options(${ThreadExecutableName}
+target_compile_options("RocketSimThread"
         PRIVATE
         ${CompileOptionsGccExhaustive})
+
+#----------------------------------------------------------------------------------------------------------------------
+# TCP socket server executable target
+#----------------------------------------------------------------------------------------------------------------------
+add_executable("RocketSocketServer"
+        rocket_sim_tcp_socket_server.cpp)
+
+target_compile_options("RocketSocketServer"
+        PRIVATE
+        ${CompileOptionsGccExhaustive})
+
+ target_link_libraries("RocketSocketServer"
+        PRIVATE
+        Ws2_32)
+        
