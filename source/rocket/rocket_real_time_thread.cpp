@@ -39,13 +39,20 @@ int main()
         (void)position_m;
     };
 
+    // Infinite loop for the periodic task (20ms period)
+    auto time_point_next_period = std::chrono::steady_clock::now();
     while (true)
     {
         PeriodicThreadFunc();
 
-        // Yield execution of this thread until the next periodic time point
+        // Send latest position using Web Socket
+
+        // Yield execution of this thread until the next periodic time point.
+        // The method below will eliminate thread's own execution time affecting
+        // the period, thus allowing more accurate interval for the periodic task.
         using std::chrono::operator""ms;
-        std::this_thread::sleep_until(std::chrono::steady_clock::now() + 20ms);
+        time_point_next_period += 20ms;
+        std::this_thread::sleep_until(time_point_next_period);
     }
 
     return 0;
