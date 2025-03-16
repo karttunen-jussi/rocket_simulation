@@ -8,7 +8,9 @@
 
 #include "rocket.hpp"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
@@ -35,7 +37,33 @@ static SOCKET ConnectSocket()
 
     const SOCKET socket_connected = accept(socket_listen, nullptr, nullptr);
 
+    // Set the socket non-blocking
+    unsigned long mode = 1;
+    ioctlsocket(socket_connected, static_cast<long>(FIONBIO), &mode);
+
     return socket_connected;
+}
+
+static XyVector_t SimulateRocketNextPosition(XyVector_t power_command_kW)
+{
+    // Rocket simulation parameters
+    constexpr double time_step_s          = 1.0e-3;
+    constexpr double time_update_period_s = 100.0e-3;
+    constexpr double mass_rocket_kg       = 1000.0;
+
+    static Rocket_t rocket{
+        {.time_step_s    = time_step_s,
+         .mass_rocket_kg = mass_rocket_kg}
+    };
+
+    double time_elapsed_s = 0.0;
+    while (time_elapsed_s <= time_update_period_s)
+    {
+        rocket.UpdateState(power_command_kW);
+        time_elapsed_s += time_step_s;
+    }
+
+    return rocket.GetPosition_m();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -44,44 +72,34 @@ static SOCKET ConnectSocket()
 
 int main()
 {
-    // Rocket simulation parameters
-    constexpr double time_step_s    = 1.0e-3;
-    constexpr double mass_rocket_kg = 1000.0;
-
-    // Create the instance of the rocket
-    Rocket_t rocket{
-        {.time_step_s    = time_step_s,
-         .mass_rocket_kg = mass_rocket_kg}
-    };
-
     const SOCKET socket = ConnectSocket();
 
+    // Infinite loop for the periodic task (100ms period)
+    auto time_point_next_period = std::chrono::steady_clock::now();
     while (true)
     {
-        XyVector_t power_command_kW;
+        XyVector_t power_command_recv_kW;
         const int count_recv_bytes = recv(socket,
-                                          reinterpret_cast<char*>(&power_command_kW),
+                                          reinterpret_cast<char*>(&power_command_recv_kW),
                                           sizeof(XyVector_t),
                                           0);
 
-        if (count_recv_bytes > 0)
+        static XyVector_t power_command_kW;
+        if (count_recv_bytes == sizeof(XyVector_t))
         {
-            std::cout << "Power x-axis: " << power_command_kW.x_axis << " kW" << std::endl;
-            std::cout << "Power y-axis: " << power_command_kW.y_axis << " kW" << std::endl;
-
-            rocket.UpdateState(power_command_kW);
-            const XyVector_t position_m = {12.3, 34.5}; //rocket.GetPosition_m();
-
-            send(socket,
-                reinterpret_cast<const char*>(&position_m),
-                sizeof(XyVector_t),
-                0);
+            power_command_kW = power_command_recv_kW;
         }
-        else if (count_recv_bytes == 0)
-        {
-            std::cout << "Connection closed!" << std::endl;
-            break;
-        }
+
+        const XyVector_t position_m = SimulateRocketNextPosition(power_command_kW);
+
+        send(socket,
+             reinterpret_cast<const char*>(&position_m),
+             sizeof(XyVector_t),
+             0);
+
+        using std::chrono::operator""ms;
+        time_point_next_period += 100ms;
+        std::this_thread::sleep_until(time_point_next_period);
     }
 
     return 0;

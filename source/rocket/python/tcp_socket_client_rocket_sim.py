@@ -44,12 +44,10 @@ def ReceiveDataFromTcpSocket():
         data_received_raw = socket_rocket_sim.recv(size_rocket_data_bytes)
 
         # Convert received raw bits to actual Python data type values
-        data_converted_tuple = struct.unpack("<2d", data_received_raw)
-        data_converted_list  = list(data_converted_tuple)
-        print(data_converted_list)
+        data_converted = struct.unpack("<2d", data_received_raw)
 
         # Place the converted data into the queue for real-time plotting
-        data_queue.put(data_converted_list)
+        data_queue.put(data_converted)
 
 # Create and start the thread
 receive_feedback_thread = threading.Thread(target=ReceiveDataFromTcpSocket, daemon=True)
@@ -68,9 +66,40 @@ send_command_thread = threading.Thread(target=SendDataToTcpSocket, daemon=True)
 send_command_thread.start()
 
 #######################################################################################################################
-# MAIN THREAD 
+# PLOTTING
 #######################################################################################################################
 
-# Trap the main thread here
-while True:
-    time.sleep(1.0)
+fig, axis = plt.subplots(1, 1)
+fig.set_tight_layout(True)
+line_object = axis.plot([], [])
+axis.grid()
+
+plt.xlabel("Position_x[m]")
+plt.ylabel("Position_y[m]")
+
+x_axis_data = []
+y_axis_data = []
+
+# Update function for animation
+def UpdateAnimation(frame_number):
+    position_x_m, position_y_m = data_queue.get()
+    x_axis_data.append(position_x_m)
+    y_axis_data.append(position_y_m)
+
+    line_object[0].set_data(x_axis_data, y_axis_data)
+    plot_margin = 50.0
+    axis.set_xlim(min(x_axis_data) - plot_margin, max(x_axis_data) + plot_margin)
+    axis.set_ylim(min(y_axis_data) - plot_margin, max(y_axis_data) + plot_margin)
+
+    return line_object
+
+# Animate the plot
+ani = animation.FuncAnimation(fig      = fig,
+                              func     = UpdateAnimation,
+                              interval = 100,
+                              blit     = False,
+                              cache_frame_data = False)
+
+# Display the plot
+plt.show()
+
