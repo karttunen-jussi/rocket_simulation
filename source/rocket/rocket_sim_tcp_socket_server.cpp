@@ -6,6 +6,8 @@
 // PRIVATE INCLUDE DIRECTIVES
 //---------------------------------------------------------------------------------------------------------------------
 
+#include "rocket.hpp"
+
 #include <iostream>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -13,10 +15,10 @@
 #include <windows.h>
 
 //---------------------------------------------------------------------------------------------------------------------
-// EXECUTABLE MAIN FUNCTION DEFINITION
+// PRIVATE (STATIC) FUNCTION DEFINITIONS
 //---------------------------------------------------------------------------------------------------------------------
 
-int main()
+static SOCKET ConnectSocket()
 {
     WSADATA wsa_data;
     WSAStartup(MAKEWORD(2, 2), &wsa_data);
@@ -33,15 +35,47 @@ int main()
 
     const SOCKET socket_connected = accept(socket_listen, nullptr, nullptr);
 
+    return socket_connected;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+// EXECUTABLE MAIN FUNCTION DEFINITION
+//---------------------------------------------------------------------------------------------------------------------
+
+int main()
+{
+    // Rocket simulation parameters
+    constexpr double time_step_s    = 1.0e-3;
+    constexpr double mass_rocket_kg = 1000.0;
+
+    // Create the instance of the rocket
+    Rocket_t rocket{
+        {.time_step_s    = time_step_s,
+         .mass_rocket_kg = mass_rocket_kg}
+    };
+
+    const SOCKET socket = ConnectSocket();
+
     while (true)
     {
-        char buffer[48] = {};
-
-        const int count_recv_bytes = recv(socket_connected, buffer, sizeof(buffer), 0);
+        XyVector_t power_command_kW;
+        const int count_recv_bytes = recv(socket,
+                                          reinterpret_cast<char*>(&power_command_kW),
+                                          sizeof(XyVector_t),
+                                          0);
 
         if (count_recv_bytes > 0)
         {
-            std::cout << "Received message: " << buffer << std::endl;
+            std::cout << "Power x-axis: " << power_command_kW.x_axis << " kW" << std::endl;
+            std::cout << "Power y-axis: " << power_command_kW.y_axis << " kW" << std::endl;
+
+            rocket.UpdateState(power_command_kW);
+            const XyVector_t position_m = {12.3, 34.5}; //rocket.GetPosition_m();
+
+            send(socket,
+                reinterpret_cast<const char*>(&position_m),
+                sizeof(XyVector_t),
+                0);
         }
         else if (count_recv_bytes == 0)
         {
