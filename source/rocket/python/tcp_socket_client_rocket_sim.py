@@ -82,9 +82,10 @@ y_axis_data = []
 
 # Update function for animation
 def UpdateAnimation(frame_number):
-    position_x_m, position_y_m = data_queue.get()
-    x_axis_data.append(position_x_m)
-    y_axis_data.append(position_y_m)
+    while (not data_queue.empty()):
+        position_x_m, position_y_m = data_queue.get()
+        x_axis_data.append(position_x_m)
+        y_axis_data.append(position_y_m)
 
     line_object[0].set_data(x_axis_data, y_axis_data)
     plot_margin = 50.0
@@ -102,4 +103,3 @@ ani = animation.FuncAnimation(fig      = fig,
 
 # Display the plot
 plt.show()
-
