@@ -1,9 +1,10 @@
+import asyncio
 import socket
 import struct
 import threading
 import time
 import queue
-from websockets.sync.server import serve
+from websockets.asyncio.server import serve
 
 # Queues to handle exchanging data between threads
 queue_power_command = queue.Queue()
@@ -48,26 +49,29 @@ tcp_socket_send_thread.start()
 #######################################################################################################################
 # Websocket connection with the Rocket UI
 #######################################################################################################################
+ 
+async def ReceiveHandler(websocket):
+    async for message in websocket:
+        power_command_values = message.split(";")
+        power_x_kW = float(power_command_values[0])
+        power_y_kW = float(power_command_values[1])
+        queue_power_command.put((power_x_kW, power_y_kW))
 
-def WebSocketHandler(websocket):
-    
-    # Handle received rocket power commands from UI
-    for message in websocket:
-        print(message)
-        # Process message and put it into command queue
-        # ...
-        # ...
+async def SendHandler(websocket):
+    while True:
+        if (not queue_position_feedback.empty()):
+            position_x_m, position_y_m = queue_position_feedback.get()
+            message = str(str(position_x_m) + ";" + str(position_y_m))
+            websocket.send(message)
 
-        # Below is just hardcoded test value
-        queue_power_command.put((10.0, 10.0))
+async def WebSocketHandler(websocket):
+    await asyncio.gather(
+        ReceiveHandler(websocket),
+        SendHandler(websocket),
+    )
 
-    # Handle sending rocket position feedback to UI     
-    while (not queue_position_feedback.empty()):
-        position_x_m, position_y_m = queue_position_feedback.get()
-        message = str(str(position_x_m) + ";" + str(position_y_m))
-        websocket.send(message)
+async def main():
+    async with serve(WebSocketHandler, "localhost", 8765) as server:
+        await server.serve_forever()
 
-# Connect Websocket with the Rocket UI
-port_websocket = 8765
-with serve(WebSocketHandler, "localhost", port_websocket) as server:
-    server.serve_forever()
+asyncio.run(main())
