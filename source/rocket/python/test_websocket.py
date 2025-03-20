@@ -1,16 +1,23 @@
+import asyncio
+from websockets.asyncio.server import serve
 
-from websockets.sync.server import serve
+async def ReceiveHandler(websocket):
+    async for message in websocket:
+        print("Received: " + message + "\n")
 
-def WebSocketHandler(websocket):
-    
-    # Handle received rocket power commands from UI
-    for message_received in websocket:
-        print(message_received)
+async def SendHandler(websocket):
+    while True:
+        await websocket.send("123.4;567.8")
+        await asyncio.sleep(2.0)
 
-        message_response = "Received this message: " + message_received
-        websocket.send(message_response)
+async def WebSocketHandler(websocket):
+    await asyncio.gather(
+        ReceiveHandler(websocket),
+        SendHandler(websocket),
+    )
 
-# Connect Websocket with the Rocket UI
-port_websocket = 8765
-with serve(WebSocketHandler, "localhost", port_websocket) as server:
-    server.serve_forever()
+async def main():
+    async with serve(WebSocketHandler, "localhost", 8765) as server:
+        await server.serve_forever()
+
+asyncio.run(main())
