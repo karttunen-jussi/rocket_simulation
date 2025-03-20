@@ -62,7 +62,8 @@ async def SendHandler(websocket):
         if (not queue_position_feedback.empty()):
             position_x_m, position_y_m = queue_position_feedback.get()
             message = str(str(position_x_m) + ";" + str(position_y_m))
-            websocket.send(message)
+            await websocket.send(message)
+            await asyncio.sleep(0.01)
 
 async def WebSocketHandler(websocket):
     await asyncio.gather(

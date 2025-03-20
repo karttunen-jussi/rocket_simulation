@@ -56,7 +56,7 @@ set("CompileOptionsGccExhaustive"
         -Wmultiple-inheritance
         -Wnormalized
         -Wnull-dereference
-        -Wnrvo
+        #-Wnrvo TODO: Temporarility disabled
         -Wold-style-cast
         -Wpacked
         -Wplacement-new=2
