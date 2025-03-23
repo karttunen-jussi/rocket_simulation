@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION "3.29")
 
-project("SmallExamples"
+project("RocketSimulation"
         LANGUAGES "CXX"
-        DESCRIPTION "Small C++ and CMake examples for teaching purposes")
+        DESCRIPTION "Newton's laws of motion based 2D physic simulation presenting rocket movement")
 
 set(CMAKE_CXX_STANDARD "23")
 set(CMAKE_CXX_EXTENSIONS "OFF")

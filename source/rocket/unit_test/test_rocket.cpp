@@ -6,7 +6,7 @@
 // PRIVATE INCLUDE DIRECTIVES
 //---------------------------------------------------------------------------------------------------------------------
 
-#include "rocket.hpp"
+#include "../rocket.hpp"
 #include "utility/sim_scheduler.hpp"
 
 #include <catch2/catch_all.hpp>
