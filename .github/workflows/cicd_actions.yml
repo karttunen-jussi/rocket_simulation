@@ -1,0 +1,31 @@
+name: CI/CD actions
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Cpp
+      uses: aminya/setup-cpp@v1
+      with:
+        compiler: gcc
+        cmake: true
+        ninja: true
+
+    - name: Configure CMake
+      run: cmake -G "Ninja" -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_CXX_COMPILER=g++
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C
+      
