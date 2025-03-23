@@ -1,2 +1,1 @@
-# examples
-Small C++ and CMake examples for teaching purposes
+Newton's laws of motion based 2D physic simulation presenting rocket movement
