@@ -10,3 +10,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(Catch2)
+
+include(CTest)
+include(Catch)
