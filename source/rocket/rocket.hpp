@@ -38,6 +38,7 @@ struct XyVector_t
 {
     double x_axis;
     double y_axis;
+    double z_axis;
 };
 
 struct AxisState_t
