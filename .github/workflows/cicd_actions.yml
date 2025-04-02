@@ -28,9 +28,8 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build
 
-   # - name: Check Formatting
-     # run: clang-format -i -- **.cpp **.h **.hpp
-
+    - name: Check Formatting
+      run: cd ${{github.workspace}}; git clang-format --diff main
 
     - name: Run static analysis with Cppcheck
       run: cppcheck --enable=all ${{github.workspace}}/source/rocket ${{github.workspace}}/source/rocket/unit_test ${{github.workspace}}/source/utility 
