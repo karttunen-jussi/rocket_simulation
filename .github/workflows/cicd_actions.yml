@@ -29,7 +29,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build
 
     - name: Check Formatting
-      run: cd ${{github.workspace}}; git clang-format --diff
+      run: cd ${{github.workspace}}; git clang-format --diff main
 
     - name: Run static analysis with Cppcheck
       run: cppcheck --enable all ${{github.workspace}}/source
