@@ -39,8 +39,8 @@ jobs:
               Select-Object -ExpandProperty FullName | 
               Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
-   # - name: Check Formatting
-     # run: clang-format -i -- **.cpp **.h **.hpp
+    - name: Check Formatting
+      run: FOR /F "delims=" %i IN (cpplist.txt) DO clang-format -i "%i"
 
 
     - name: Run static analysis with Cppcheck
