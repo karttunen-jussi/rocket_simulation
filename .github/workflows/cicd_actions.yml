@@ -44,7 +44,7 @@ jobs:
       run: |
         $FileList = Get-Content "cpplist.txt"
         foreach ($File in $FileList) {
-          clang-format i "$file"
+          clang-format -i "$file"
         }
 
 
