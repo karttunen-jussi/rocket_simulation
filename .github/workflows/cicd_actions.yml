@@ -40,7 +40,12 @@ jobs:
               Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
     - name: Check Formatting
-      run: FOR /F "delims=" %i IN (cpplist.txt) DO clang-format -i "%i"
+      shell: pwsh
+      run: |
+        $FileList = Get-Content "cpplist.txt"
+        foreach ($File in $FileList) {
+          clang-format i "$file"
+        }
 
 
     - name: Run static analysis with Cppcheck
