@@ -29,29 +29,22 @@ jobs:
       run: cmake --build ${{github.workspace}}/build
       
     - name: Create .txt file that contains all .cpp and .hpp files
-      shell: pwsh
       run: |
         $TargetFolder = "${{github.workspace}}\source"
-        $OutputFile = "${{github.workspace}}\cpplist.txt"
+        $OutputFile   = "${{github.workspace}}\cpplist.txt"
 
         Get-ChildItem -Path $TargetFolder -Recurse -File | 
               Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
               Select-Object -ExpandProperty FullName | 
               Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
-    - name: Check Formatting
-      shell: pwsh
-      run: |
-        $FileList = Get-Content "cpplist.txt"
-        foreach ($File in $FileList) {
-          clang-format -i "$file"
-        }
-
-
+    - name: Check code style with clang-format
+      run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
+        
     - name: Run static analysis with Cppcheck
-      run: cppcheck --enable=all  --file-list=${{github.workspace}}\cpplist.txt
+      run: cppcheck --enable=all --file-list=${{github.workspace}}\cpplist.txt
 
-    - name: Execute Unit Tests
+    - name: Execute unit tests
       working-directory: ${{github.workspace}}/build
       run: ctest
       
