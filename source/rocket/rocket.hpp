@@ -53,7 +53,7 @@ struct AxisState_t
 class Rocket_t
 {
   public:
-    Rocket_t(const RocketPars_t& pars) :
+    explicit Rocket_t(const RocketPars_t& pars) :
         m_mass_rocket_kg{pars.mass_rocket_kg},
         m_x_axis{.speed_m_s{pars.time_step_s}, .position_m{pars.time_step_s}},
         m_y_axis{.speed_m_s{pars.time_step_s}, .position_m{pars.time_step_s}}

@@ -11,7 +11,7 @@
 class Integrator_t
 {
   public:
-    Integrator_t(const double time_step_s) :
+    explicit Integrator_t(const double time_step_s) :
         m_time_step_s{time_step_s}
     {}
 

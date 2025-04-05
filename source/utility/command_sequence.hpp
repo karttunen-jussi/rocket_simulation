@@ -30,7 +30,7 @@ using CommandSequence_t = std::vector<CommandPoint_t>;
 class CommandGenerator_t
 {
   public:
-    CommandGenerator_t(const CommandSequence_t& command_sequence) :
+    explicit CommandGenerator_t(const CommandSequence_t& command_sequence) :
         m_command_sequence{command_sequence}
     {
         const CommandPoint_t last_command_point = command_sequence.back();
