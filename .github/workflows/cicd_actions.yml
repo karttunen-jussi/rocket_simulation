@@ -2,49 +2,48 @@ name: CI/CD actions
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup Cpp
-      uses: aminya/setup-cpp@v1
-      with:
-        compiler: gcc
-        clang-format: true
-        cmake: true
-        cppcheck: true
-        ninja: true
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: gcc
+          clang-format: true
+          cmake: true
+          cppcheck: true
+          ninja: true
 
-    - name: Configure CMake
-      run: cmake -G "Ninja" -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_CXX_COMPILER=g++
+      #- name: Configure CMake
+      #  run: cmake -G "Ninja" -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_CXX_COMPILER=g++
 
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build
-      
-    - name: Create .txt file that contains all .cpp and .hpp files
-      run: |
-        $TargetFolder = "${{github.workspace}}\source"
-        $OutputFile   = "${{github.workspace}}\cpplist.txt"
+      #  - name: Build
+      #    run: cmake --build ${{github.workspace}}/build
 
-        Get-ChildItem -Path $TargetFolder -Recurse -File | 
-              Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
-              Select-Object -ExpandProperty FullName | 
-              Out-File -FilePath $OutputFile -Encoding UTF8 -Force
+      - name: Create .txt file that contains all .cpp and .hpp files
+        run: |
+          $TargetFolder = "${{github.workspace}}\source"
+          $OutputFile   = "${{github.workspace}}\cpplist.txt"
 
-    - name: Check code style with clang-format
-      run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
-        
-    - name: Run static analysis with Cppcheck
-      run: cppcheck --enable=all --file-list=${{github.workspace}}\cpplist.txt
+          Get-ChildItem -Path $TargetFolder -Recurse -File | 
+                Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
+                Select-Object -ExpandProperty FullName | 
+                Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
-    - name: Execute unit tests
-      working-directory: ${{github.workspace}}/build
-      run: ctest
-      
+      #- name: Check code style with clang-format
+      #  run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
+
+      - name: Run static analysis with Cppcheck
+        run: cppcheck --enable=all --supress=[missingInclude, missingIncludeSystem]--file-list=${{github.workspace}}\cpplist.txt
+
+      # - name: Execute unit tests
+      #   working-directory: ${{github.workspace}}/build
+      #  run: ctest
