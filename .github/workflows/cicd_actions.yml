@@ -42,7 +42,7 @@ jobs:
       #  run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
 
       - name: Run static analysis with Cppcheck
-        run: cppcheck --enable=all --supress=[missingInclude, missingIncludeSystem]--file-list=${{github.workspace}}\cpplist.txt
+        run: cppcheck --enable=all --suppress=[missingInclude, missingIncludeSystem] --file-list=${{github.workspace}}\cpplist.txt
 
       # - name: Execute unit tests
       #   working-directory: ${{github.workspace}}/build
