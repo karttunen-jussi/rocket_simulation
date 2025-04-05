@@ -23,15 +23,15 @@ jobs:
           ninja: true
 
       - name: Configure CMake
-        run: cmake -G "Ninja" -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_CXX_COMPILER=g++
+        run: cmake -G "Ninja" -S .\ -B .\build -D CMAKE_CXX_COMPILER=g++
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build
+        run: cmake --build .\build
 
       - name: Create .txt file that contains all .cpp and .hpp files
         run: |
-          $TargetFolder = "${{github.workspace}}\source"
-          $OutputFile   = "${{github.workspace}}\cpplist.txt"
+          $TargetFolder = ".\source"
+          $OutputFile   = ".\cpplist.txt"
 
           Get-ChildItem -Path $TargetFolder -Recurse -File | 
                 Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
@@ -45,5 +45,5 @@ jobs:
         run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt
 
       - name: Execute unit tests
-        working-directory: ${{github.workspace}}/build
+        working-directory: .\build
         run: ctest
