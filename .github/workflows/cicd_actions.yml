@@ -29,15 +29,19 @@ jobs:
           ninja: true
 
       - name: Configure CMake for Clang build
+        if: matrix.compiler == 'llvm'
         run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
 
       - name: Build with Clang compiler
+        if: matrix.compiler == 'llvm'
         run: cmake --build .\build_clang
 
       - name: Configure CMake for GNU build
+        if: matrix.compiler == 'gcc'
         run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
 
       - name: Build with GNU compiler
+        if: matrix.compiler == 'gcc'
         run: cmake --build .\build_gnu
 
       - name: Create .txt file that contains all .cpp and .hpp files
@@ -45,9 +49,9 @@ jobs:
           $TargetFolder = ".\source"
           $OutputFile   = ".\cpplist.txt"
 
-          Get-ChildItem -Path $TargetFolder -Recurse -File | 
-                Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
-                Select-Object -ExpandProperty FullName | 
+          Get-ChildItem -Path $TargetFolder -Recurse -File |
+                Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } |
+                Select-Object -ExpandProperty FullName |
                 Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
       - name: Check code style with clang-format
@@ -57,5 +61,6 @@ jobs:
         run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
       - name: Execute unit tests
-        working-directory: .\build
+        if: matrix.compiler == 'gcc'
+        working-directory: .\build_gnu
         run: ctest
