@@ -10,19 +10,14 @@ jobs:
   build:
     runs-on: windows-latest
 
-    strategy:
-      matrix:
-        compiler:
-          - llvm
-          - gcc
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
         with:
-          compiler: ${{matrix.compiler}}
+          compiler: llvm
+          compiler: gcc
           clang-format: true
           cmake: true
           cppcheck: true
