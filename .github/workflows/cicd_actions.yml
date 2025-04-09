@@ -31,14 +31,10 @@ jobs:
       - name: Configure CMake
         if: ${{ matrix.compiler == 'gcc' }}
         run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
-        if: ${{ matrix.compiler == 'llvm' }}
-        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
 
       - name: Build
         if: ${{ matrix.compiler == 'gcc' }}
         run: cmake --build .\build_gnu
-        if: ${{ matrix.compiler == 'llvm' }}
-        run: cmake --build .\build_clang
 
       - name: Create .txt file that contains all .cpp and .hpp files
         run: |
@@ -59,6 +55,4 @@ jobs:
       - name: Execute unit tests
         if: ${{ matrix.compiler == 'gcc' }}
         working-directory: .\build_gnu
-        if: ${{ matrix.compiler == 'llvm' }}
-        working-directory: .\build_clang
         run: ctest
