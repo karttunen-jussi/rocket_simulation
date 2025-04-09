@@ -102,6 +102,7 @@ set(CompileOptionsAllClang
     "-pedantic-errors"
     "-Wno-c++98-compat"
     "-Wno-c++98-compat-pedantic"
+    "-Wno-nonportable-system-include-path"
     "-Wno-padded")
 
 # Choose the applied set of compiler options based on the selected compiler.
@@ -121,5 +122,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         "-Wno-suggest-final-types")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CompileWarningsExcludedWithCatch2
+        "-Wno-sign-conversion"
         "-Wno-unsafe-buffer-usage")
 endif()
