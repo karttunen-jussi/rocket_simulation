@@ -10,23 +10,35 @@ jobs:
   build:
     runs-on: windows-latest
 
+    strategy:
+      matrix:
+        compiler:
+          - llvm
+          - gcc
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
         with:
-          compiler: gcc
+          compiler: ${{matrix.compiler}}
           clang-format: true
           cmake: true
           cppcheck: true
           ninja: true
 
-      - name: Configure CMake
-        run: cmake -G "Ninja" -S .\ -B .\build -D CMAKE_CXX_COMPILER=g++
+      - name: Configure CMake for Clang build
+        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
 
-      - name: Build
-        run: cmake --build .\build
+      - name: Build with Clang compiler
+        run: cmake --build .\build_clang
+
+      - name: Configure CMake for GNU build
+        run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
+
+      - name: Build with GNU compiler
+        run: cmake --build .\build_gnu
 
       - name: Create .txt file that contains all .cpp and .hpp files
         run: |
