@@ -1,0 +1,125 @@
+# List of compiler options when using GNU compiler
+set(CompileOptionsAllGnu
+    "-O2"
+    "-g"
+    "-fdiagnostics-color"
+    "-fimplicit-constexpr"
+    "-fstrict-aliasing"
+    "-fstrict-enums"
+    "-fstrict-flex-arrays"
+    "-ftrivial-auto-var-init=pattern"
+    "-Wall"
+    "-Wextra"
+    "-Wpedantic"
+    "-Werror"
+    "-pedantic-errors"
+    "-Walloca"
+    "-Walloc-zero"
+    "-Warith-conversion"
+    "-Warray-bounds=2"
+    "-Wattribute-alias=2"
+    "-Wbidi-chars=any,ucn"
+    "-Wbuiltin-declaration-mismatch"
+    "-Wbuiltin-macro-redefined"
+    "-Wcast-qual"
+    "-Wcast-align=strict"
+    "-Wchanges-meaning"
+    "-Wconversion"
+    "-Wdeprecated"
+    "-Wdisabled-optimization"
+    "-Wdouble-promotion"
+    "-Wduplicated-branches"
+    "-Wduplicated-cond"
+    "-Wenum-conversion"
+    "-Wextra-semi"
+    "-Wfloat-equal"
+    "-Wformat=2"
+    "-Wformat-signedness"
+    "-Wimplicit-fallthrough=5"
+    "-Winline"
+    "-Winvalid-constexpr"
+    "-Winvalid-imported-macros"
+    "-Winvalid-pch"
+    "-Winvalid-utf8"
+    "-Wlogical-op"
+    "-Wmismatched-tags"
+    "-Wmissing-declarations"
+    "-Wmissing-include-dirs"
+    "-Wmissing-template-keyword"
+    "-Wmultichar"
+    "-Wmultiple-inheritance"
+    "-Wnon-virtual-dtor"
+    "-Wnormalized"
+    "-Wnrvo"
+    "-Wnull-dereference"
+    "-Wold-style-cast"
+    "-Wpacked"
+    "-Wplacement-new=2"
+    "-Wredundant-decls"
+    "-Wredundant-tags"
+    "-Wshadow"
+    "-Wshift-negative-value"
+    "-Wshift-overflow=2"
+    "-Wsign-conversion"
+    "-Wsign-promo"
+    "-Wstrict-null-sentinel"
+    "-Wstrict-overflow=3"
+    "-Wsuggest-attribute=const"
+    "-Wsuggest-final-methods"
+    "-Wsuggest-final-types"
+    "-Wsuggest-override"
+    "-Wswitch-default"
+    "-Wswitch-enum"
+    "-Wtrampolines"
+    "-Wtrivial-auto-var-init"
+    "-Wundef"
+    "-Wuninitialized"
+    "-Wunused"
+    "-Wunused-const-variable"
+    "-Wunused-macros"
+    "-Wunsafe-loop-optimizations"
+    "-Wuseless-cast"
+    "-Wvector-operation-performance"
+    "-Wvla"
+    "-Wwrite-strings"
+    "-Wxor-used-as-pow"
+    "-Wzero-as-null-pointer-constant")
+
+# List of compiler options when using Clang compiler
+set(CompileOptionsAllClang
+    "-O2"
+    "-g"
+    "-fdiagnostics-color"
+    "-fsafe-buffer-usage-suggestions"
+    "-fspell-checking"
+    "-fstrict-aliasing"
+    "-fstrict-enums"
+    "-fstrict-flex-arrays=3"
+    "-ftrivial-auto-var-init=pattern"
+    "-Weverything"
+    "-Werror"
+    "-pedantic"
+    "-pedantic-errors"
+    "-Wno-c++98-compat"
+    "-Wno-c++98-compat-pedantic"
+    "-Wno-padded")
+
+# Choose the applied set of compiler options based on the selected compiler.
+# This is done because GNU and Clang support somewhat different warnings and options.
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CompileOptionsAll
+        ${CompileOptionsAllGnu})
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CompileOptionsAll
+        ${CompileOptionsAllClang})
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CompileWarningsExcludedWithCatch2
+        "-Wno-multiple-inheritance"
+        "-Wno-suggest-final-methods"
+        "-Wno-suggest-final-types")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CompileWarningsExcludedWithCatch2
+        "-Wno-unsafe-buffer-usage")
+endif()

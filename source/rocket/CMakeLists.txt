@@ -6,7 +6,7 @@ add_executable(SimulateRocket
 
 target_compile_options(SimulateRocket
         PRIVATE
-        ${CompileOptionsGccExhaustive})
+        ${CompileOptionsAll})
 
 target_include_directories(SimulateRocket
         PRIVATE
@@ -20,7 +20,7 @@ add_executable(RocketSimThread
 
 target_compile_options(RocketSimThread
         PRIVATE
-        ${CompileOptionsGccExhaustive})
+        ${CompileOptionsAll})
         
 target_include_directories(RocketSimThread
         PRIVATE
@@ -34,7 +34,7 @@ add_executable(RocketSocketServer
 
 target_compile_options(RocketSocketServer
         PRIVATE
-        ${CompileOptionsGccExhaustive})
+        ${CompileOptionsAll})
 
 target_include_directories(RocketSocketServer
         PRIVATE
@@ -52,8 +52,8 @@ add_executable(TestRocket
 
 target_compile_options(TestRocket
         PRIVATE
-        ${CompileOptionsGccExhaustive}
-        "-Wno-multiple-inheritance")
+        ${CompileOptionsAll}
+        ${CompileWarningsExcludedWithCatch2})
 
 target_include_directories(TestRocket
         PRIVATE

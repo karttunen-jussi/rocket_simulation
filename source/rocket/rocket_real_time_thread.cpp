@@ -54,6 +54,4 @@ int main()
         time_point_next_period += 20ms;
         std::this_thread::sleep_until(time_point_next_period);
     }
-
-    return 0;
 }
