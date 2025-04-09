@@ -10,30 +10,35 @@ jobs:
   build:
     runs-on: windows-latest
 
+    strategy:
+      matrix:
+        compiler:
+          - llvm
+          - gcc
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
         with:
-          compiler: llvm
-          compiler: gcc
+          compiler: ${{matrix.compiler}}
           clang-format: true
           cmake: true
           cppcheck: true
           ninja: true
 
-      - name: Configure CMake for Clang build
+      - name: Configure CMake
+        if: ${{ matrix.compiler == 'gcc' }}
+        run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
+        if: ${{ matrix.compiler == 'llvm' }}
         run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
 
-      - name: Build with Clang compiler
-        run: cmake --build .\build_clang
-
-      - name: Configure CMake for GNU build
-        run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
-
-      - name: Build with GNU compiler
+      - name: Build
+        if: ${{ matrix.compiler == 'gcc' }}
         run: cmake --build .\build_gnu
+        if: ${{ matrix.compiler == 'llvm' }}
+        run: cmake --build .\build_clang
 
       - name: Create .txt file that contains all .cpp and .hpp files
         run: |
@@ -52,5 +57,8 @@ jobs:
         run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
       - name: Execute unit tests
-        working-directory: .\build
+        if: ${{ matrix.compiler == 'gcc' }}
+        working-directory: .\build_gnu
+        if: ${{ matrix.compiler == 'llvm' }}
+        working-directory: .\build_clang
         run: ctest
