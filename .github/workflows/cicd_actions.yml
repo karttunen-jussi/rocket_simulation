@@ -55,12 +55,3 @@ jobs:
         - name: Execute unit tests
           working-directory: .\build_gnu
           run: ctest
-
-      steps:
-        if: matrix.compiler == 'llvm'
-        steps:
-          - name: Configure CMake
-            run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
-
-          - name: Build
-            run: cmake --build .\build_clang
