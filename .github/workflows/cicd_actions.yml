@@ -28,7 +28,6 @@ jobs:
           cppcheck: true
           ninja: true
       
-      if: matrix.compiler == 'gcc'
       steps:
         - name: Configure CMake
           run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
