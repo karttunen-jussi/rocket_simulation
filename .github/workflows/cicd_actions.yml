@@ -27,32 +27,40 @@ jobs:
           cmake: true
           cppcheck: true
           ninja: true
+      
+      if: matrix.compiler == 'gcc'
+      steps:
+        - name: Configure CMake
+          run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
 
-      - name: Configure CMake
-        if: ${{ matrix.compiler == 'gcc' }}
-        run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
+        - name: Build
+          run: cmake --build .\build_gnu
 
-      - name: Build
-        if: ${{ matrix.compiler == 'gcc' }}
-        run: cmake --build .\build_gnu
+        - name: Create .txt file that contains all .cpp and .hpp files
+          run: |
+            $TargetFolder = ".\source"
+            $OutputFile   = ".\cpplist.txt"
 
-      - name: Create .txt file that contains all .cpp and .hpp files
-        run: |
-          $TargetFolder = ".\source"
-          $OutputFile   = ".\cpplist.txt"
+            Get-ChildItem -Path $TargetFolder -Recurse -File | 
+                  Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
+                  Select-Object -ExpandProperty FullName | 
+                  Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
-          Get-ChildItem -Path $TargetFolder -Recurse -File | 
-                Where-Object { $_.Extension -eq ".cpp" -or $_.Extension -eq ".hpp" } | 
-                Select-Object -ExpandProperty FullName | 
-                Out-File -FilePath $OutputFile -Encoding UTF8 -Force
+        - name: Check code style with clang-format
+          run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
 
-      - name: Check code style with clang-format
-        run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
+        - name: Run static analysis with Cppcheck
+          run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
-      - name: Run static analysis with Cppcheck
-        run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
+        - name: Execute unit tests
+          working-directory: .\build_gnu
+          run: ctest
 
-      - name: Execute unit tests
-        if: ${{ matrix.compiler == 'gcc' }}
-        working-directory: .\build_gnu
-        run: ctest
+      steps:
+        if: matrix.compiler == 'llvm'
+        steps:
+          - name: Configure CMake
+            run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
+
+          - name: Build
+            run: cmake --build .\build_clang
