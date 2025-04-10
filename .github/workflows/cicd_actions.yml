@@ -30,7 +30,7 @@ jobs:
           ninja: true
 
       - name: Configure CMake for double build
-        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=${{ matrix.compiler == 'g++' || 'clang++' }}
+        run: cmake -G "Ninja" -S .\ -B .\build -D CMAKE_CXX_COMPILER=${{ matrix.compiler == 'g++' || 'clang++' }}
 
       - name: Build with double compiler
         run: cmake --build .\build
