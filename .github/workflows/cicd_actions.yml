@@ -7,15 +7,12 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  build-gcc:
+    name: Build with GNU and execute unit tests
     runs-on: windows-latest
 
     strategy:
       fail-fast: false
-      matrix:
-        compiler:
-          - llvm
-          - gcc
 
     steps:
       - uses: actions/checkout@v4
@@ -23,17 +20,60 @@ jobs:
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
         with:
-          compiler: ${{matrix.compiler}}
+          compiler: gcc
+          cmake: true
+          ninja: true
+
+      - name: Configure CMake for GNU build
+        run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
+
+      - name: Build with GNU compiler
+        run: cmake --build .\build_gnu
+
+      - name: Execute unit tests
+        working-directory: .\build_gnu
+        run: ctest
+
+  build-clang:
+    name: Build with Clang
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: llvm
           clang-format: true
           cmake: true
           cppcheck: true
           ninja: true
 
-      - name: Configure CMake for double build
-        run: cmake -G "Ninja" -S .\ -B .\build -D CMAKE_CXX_COMPILER=${{ matrix.compiler == 'g++' || 'clang++' }}
+      - name: Configure CMake for Clang build
+        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
 
-      - name: Build with double compiler
-        run: cmake --build .\build
+      - name: Build with Clang compiler
+        run: cmake --build .\build_clang
+
+  analysis:
+    name: Run static analysis and format check
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          clang-format: true
+          cppcheck: true
 
       - name: Create .txt file that contains all .cpp and .hpp files
         run: |
@@ -50,7 +90,3 @@ jobs:
 
       - name: Run static analysis with Cppcheck
         run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
-
-      - name: Execute unit tests
-        working-directory: .\build
-        run: ctest
