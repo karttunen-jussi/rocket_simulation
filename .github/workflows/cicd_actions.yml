@@ -48,9 +48,7 @@ jobs:
         uses: aminya/setup-cpp@v1
         with:
           compiler: llvm
-          clang-format: true
           cmake: true
-          cppcheck: true
           ninja: true
 
       - name: Configure CMake for Clang build
