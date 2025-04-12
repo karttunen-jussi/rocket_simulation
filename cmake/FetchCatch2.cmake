@@ -7,6 +7,7 @@ FetchContent_Declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
         GIT_TAG v3.8.0
+        SYSTEM
 )
 
 FetchContent_MakeAvailable(Catch2)

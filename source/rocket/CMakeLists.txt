@@ -21,7 +21,7 @@ add_executable(RocketSimThread
 target_compile_options(RocketSimThread
         PRIVATE
         ${CompileOptionsAll})
-        
+
 target_include_directories(RocketSimThread
         PRIVATE
         "${CMAKE_SOURCE_DIR}/source/")

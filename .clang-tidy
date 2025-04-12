@@ -1,0 +1,100 @@
+# Note that "Checks" is a string, and thus comments are passed
+# into the parsed value if not limited by comma from both sides.
+Checks: >
+  bugprone-*,
+  -bugprone-exception-escape,
+
+  cert-*,
+  -cert-err58-cpp,
+
+  clang-analyzer-*,
+
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
+
+  hicpp-*,
+  -hicpp-use-auto,
+  -hicpp-uppercase-literal-suffix,
+
+  misc-*,
+  -misc-include-cleaner,
+  -misc-use-anonymous-namespace,
+
+  modernize-*,
+  -modernize-use-nodiscard,
+  -modernize-use-trailing-return-type,
+
+  performance-*,
+  -performance-enum-size,
+
+  portability-*,
+
+  readability-*,
+  -readability-magic-numbers,
+  -readability-redundant-inline-specifier,
+
+WarningsAsErrors: "*"
+
+CheckOptions:
+- key:   cppcoreguidelines-avoid-non-const-global-variables.AllowInternalLinkage
+  value: true
+- key:   bugprone-misplaced-widening-cast.CheckImplicitCasts
+  value: true
+- key:   modernize-use-auto.MinTypeNameLength
+  value: 8
+- key: readability-function-cognitive-complexity.IgnoreMacros
+  value: true
+- key:   readability-uppercase-literal-suffix.NewSuffixes
+  value: "f;u;L;uL;uLL"
+- key:   readability-identifier-naming.ClassCase
+  value: "CamelCase"
+- key:   readability-identifier-naming.ClassSuffix
+  value: _t
+- key:   readability-identifier-naming.PrivateMemberCase
+  value: lower_case
+- key:   readability-identifier-naming.PrivateMemberIgnoredRegexp
+  value: ".*(_J|_N|_W|_kW)$"
+- key:   readability-identifier-naming.PrivateMemberPrefix
+  value: m_
+- key:   readability-identifier-naming.EnumCase
+  value: CamelCase
+- key:   readability-identifier-naming.EnumSuffix
+  value: _t
+- key:   readability-identifier-naming.EnumConstantCase
+  value: UPPER_CASE
+- key:   readability-identifier-naming.FunctionCase
+  value: CamelCase
+- key:   readability-identifier-naming.FunctionIgnoredRegexp
+  value: ".*(_J|_m|_N|_s|_W)$"
+- key:   readability-identifier-naming.MacroDefinitionCase
+  value: UPPER_CASE
+- key:   readability-identifier-naming.NamespaceCase
+  value: lower_case
+- key:   readability-identifier-naming.ParameterCase
+  value: lower_case
+- key:   readability-identifier-naming.ParameterIgnoredRegexp
+  value: ".*(_J|_N|_W|_kW)$"
+- key:   readability-identifier-naming.StructCase
+  value: CamelCase
+- key:   readability-identifier-naming.StructSuffix
+  value: _t
+- key:   readability-identifier-naming.TypeAliasCase
+  value: CamelCase
+- key:   readability-identifier-naming.TypeAliasSuffix
+  value: _t
+- key:   readability-identifier-naming.VariableCase
+  value: lower_case
+- key:   readability-identifier-naming.VariableIgnoredRegexp
+  value: ".*(_N|_W|_kW)$"
+
+# By default, clang-tidy does not show errors from any header files. Note that the regex
+# filter below is inclusive. Thus, you need to filter IN what you want to see.
+# Filter below displays errors from all the (non-system) headers.
+HeaderFilterRegex: ".*"
+
+HeaderFileExtensions:         ["hpp"]
+ImplementationFileExtensions: ["cpp"]
+
+UseColor: true
+
+FormatStyle: "file"

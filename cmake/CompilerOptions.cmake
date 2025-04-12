@@ -115,13 +115,4 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         ${CompileOptionsAllClang})
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CompileWarningsExcludedWithCatch2
-        "-Wno-multiple-inheritance"
-        "-Wno-suggest-final-methods"
-        "-Wno-suggest-final-types")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CompileWarningsExcludedWithCatch2
-        "-Wno-sign-conversion"
-        "-Wno-unsafe-buffer-usage")
-endif()
+

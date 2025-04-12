@@ -7,6 +7,8 @@ project("RocketSimulation"
 set(CMAKE_CXX_STANDARD   "23")
 set(CMAKE_CXX_EXTENSIONS "OFF")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
+
 # Get the compiler options to be applied to build targets
 include(cmake/CompilerOptions.cmake)
 
