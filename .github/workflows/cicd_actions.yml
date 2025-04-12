@@ -68,3 +68,9 @@ jobs:
         if: matrix.compiler == 'gcc'
         working-directory: .\build_gnu
         run: ctest
+
+      - name: Run RocketSocketServer.exe
+        if: matrix.compiler == 'gcc'
+        working-directory: .\build_gnu\source\rocket
+        timeout-minutes: 1
+        run: .\RocketSocketServer.exe
