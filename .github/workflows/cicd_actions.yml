@@ -46,6 +46,7 @@ jobs:
         run: cmake --build .\build_gnu
 
       - name: Create .txt file that contains all .cpp and .hpp files
+        if: matrix.compiler == 'gcc'
         run: |
           $TargetFolder = ".\source"
           $OutputFile   = ".\cpplist.txt"
@@ -56,9 +57,11 @@ jobs:
                 Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
       - name: Check code style with clang-format
+        if: matrix.compiler == 'gcc'
         run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
 
       - name: Run static analysis with Cppcheck
+        if: matrix.compiler == 'gcc'
         run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
       - name: Execute unit tests
