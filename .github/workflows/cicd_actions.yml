@@ -69,9 +69,9 @@ jobs:
         working-directory: .\build_gnu
         run: ctest
 
-      - name: Run RocketSocketServer.exe
+      - name: Run integration with RocketSocket and TCP test socket
         if: matrix.compiler == 'gcc'
         timeout-minutes: 1
         run: |
-          .\build_gnu\source\rocket\RocketSocketServer.exe
+          Start-Process ".\build_gnu\source\rocket\RocketSocketServer.exe"
           python .\integration_test\tcp_test_socket.py
