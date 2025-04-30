@@ -28,7 +28,7 @@ static SOCKET ConnectSocket()
 
     const SOCKET socket_listen = socket(AF_INET, SOCK_STREAM, 0);
 
-    sockaddr_in address = {};
+    sockaddr_in address     = {};
     address.sin_family      = AF_INET;
     address.sin_port        = htons(1'234);
     address.sin_addr.s_addr = INADDR_ANY;
@@ -80,6 +80,7 @@ int main()
     while (true)
     {
         XyVector_t power_command_recv_kW = {};
+
         const int count_recv_bytes = recv(socket,
                                           reinterpret_cast<char*>(&power_command_recv_kW),
                                           sizeof(XyVector_t),
