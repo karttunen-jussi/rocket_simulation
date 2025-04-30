@@ -23,23 +23,27 @@ static auto Near(const double expected_value)
     return WithinRel(expected_value, allowed_relative_error);
 }
 
+// NOLINTNEXTLINE(*easily-swappable-parameters)
 static constexpr double CalcEnergyWithConstPower_J(const double time_interval_s, const double power_kw)
 {
     const double power_W = power_kw * convert_kW_to_W;
     return time_interval_s * power_W;
 }
 
+// NOLINTNEXTLINE(*easily-swappable-parameters)
 static constexpr double CalcKineticEnergy_J(const double mass_kg, const double speed_m_s)
 {
     return 0.5 * mass_kg * std::pow(speed_m_s, 2.0);
 }
 
+// NOLINTNEXTLINE(*easily-swappable-parameters)
 static double CalcSpeedWithConstPower_m_s(const double time_interval_s, const double power_kw, const double mass_kg)
 {
     const double power_W = power_kw * convert_kW_to_W;
     return std::sqrt((2.0 * power_W * time_interval_s) / mass_kg);
 }
 
+// NOLINTNEXTLINE(*easily-swappable-parameters)
 static double CalcPositionWithConstPower_m(const double time_interval_s, const double power_kw, const double mass_kg)
 {
     const double power_W = power_kw * convert_kW_to_W;
@@ -66,7 +70,7 @@ TEST_CASE("Accelerating rocket with constant power")
         };
 
         // Define the simulation loop function
-        auto SimLoopFunc = [&rocket](const double time_elapsed_s)
+        auto SimLoopFunc = [&rocket](const double time_elapsed_s) // NOLINT(*identifier-naming)
         {
             (void)time_elapsed_s;
 
@@ -102,7 +106,7 @@ TEST_CASE("Accelerating rocket with constant power")
         };
 
         // Define the simulation loop function
-        auto SimLoopFunc = [&rocket](const double time_elapsed_s)
+        auto SimLoopFunc = [&rocket](const double time_elapsed_s) // NOLINT(*identifier-naming)
         {
             (void)time_elapsed_s;
 
@@ -142,7 +146,7 @@ TEST_CASE("Accelerating rocket with constant power")
         };
 
         // Define the simulation loop function
-        auto SimLoopFunc = [&rocket](const double time_elapsed_s)
+        auto SimLoopFunc = [&rocket](const double time_elapsed_s) // NOLINT(*identifier-naming)
         {
             (void)time_elapsed_s;
 

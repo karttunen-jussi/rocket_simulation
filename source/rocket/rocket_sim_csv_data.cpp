@@ -32,12 +32,11 @@ int main()
              << "Speed_x[m/s],"
              << "Speed_y[m/s],"
              << "Position_x[m],"
-             << "Position_y[m]"
-             << std::endl;
+             << "Position_y[m]\n";
 
     // Define power input command sequence for the rocket
     CommandGenerator_t power_sequence_x_axis_kw{
-        {{.time_s = 0.0, .value = 10.0},
+        {{.time_s = 0.00, .value = 10.0},
          {.time_s = 10.0, .value = -10.0},
          {.time_s = 20.0, .value = 0.0},
          {.time_s = 40.0, .value = -10.0},
@@ -47,7 +46,7 @@ int main()
     };
 
     CommandGenerator_t power_sequence_y_axis_kw{
-        {{.time_s = 0.0, .value = 0.0},
+        {{.time_s = 0.00, .value = 0.0},
          {.time_s = 20.0, .value = 10.0},
          {.time_s = 30.0, .value = -10.0},
          {.time_s = 40.0, .value = 0.0},
@@ -63,7 +62,7 @@ int main()
     };
 
     // Define the simulation loop function
-    auto SimLoopFunc = [&](const double time_elapsed_s)
+    auto SimLoopFunc = [&](const double time_elapsed_s) // NOLINT(*identifier-naming)
     {
         // Update position of the rocket at every time step
         const XyVector_t power_kW = {.x_axis = power_sequence_x_axis_kw.GetCommand(time_elapsed_s),
@@ -79,7 +78,7 @@ int main()
                  << speed_m_s.x_axis << ","
                  << speed_m_s.y_axis << ","
                  << position_m.x_axis << ","
-                 << position_m.y_axis << std::endl;
+                 << position_m.y_axis << "\n";
     };
 
     // Create scheduler and run the simulation

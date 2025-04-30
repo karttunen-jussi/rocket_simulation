@@ -78,7 +78,7 @@ class Rocket_t
     }
 
   private:
-    void UpdateAxisState(const double power_kW, AxisState_t& axis)
+    void UpdateAxisState(const double power_kW, AxisState_t& axis) const
     {
         // Limit the near zero speed values to prevent force approaching infinity near zero speeds.
         const double speed_abs_m_s     = std::abs(axis.speed_m_s.GetValue());

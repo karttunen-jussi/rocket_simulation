@@ -27,7 +27,7 @@ int main()
     };
 
     // Define the execution loop function
-    auto PeriodicThreadFunc = [&]()
+    auto PeriodicThreadFunc = [&]() // NOLINT(*identifier-naming)
     {
         // Update position of the rocket at every time step
         const XyVector_t power_kW = {.x_axis = 10.0,

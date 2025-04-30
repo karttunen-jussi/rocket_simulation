@@ -11,6 +11,7 @@ Checks: >
 
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
 
   hicpp-*,
   -hicpp-use-auto,
@@ -85,7 +86,7 @@ CheckOptions:
 - key:   readability-identifier-naming.VariableCase
   value: lower_case
 - key:   readability-identifier-naming.VariableIgnoredRegexp
-  value: ".*(_N|_W|_kW)$"
+  value: ".*(_J|_N|_W|_kW)$"
 
 # By default, clang-tidy does not show errors from any header files. Note that the regex
 # filter below is inclusive. Thus, you need to filter IN what you want to see.

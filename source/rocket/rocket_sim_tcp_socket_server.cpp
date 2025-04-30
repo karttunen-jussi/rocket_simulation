@@ -11,7 +11,6 @@
 
 // STD
 #include <chrono>
-#include <iostream>
 #include <thread>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -29,12 +28,12 @@ static SOCKET ConnectSocket()
 
     const SOCKET socket_listen = socket(AF_INET, SOCK_STREAM, 0);
 
-    sockaddr_in address;
+    sockaddr_in address = {};
     address.sin_family      = AF_INET;
     address.sin_port        = htons(1'234);
     address.sin_addr.s_addr = INADDR_ANY;
 
-    bind(socket_listen, reinterpret_cast<sockaddr*>(&address), sizeof(address));
+    bind(socket_listen, reinterpret_cast<sockaddr*>(&address), sizeof(address)); // NOLINT(*unused-return-value)
     listen(socket_listen, 1);
 
     const SOCKET socket_connected = accept(socket_listen, nullptr, nullptr);
@@ -80,7 +79,7 @@ int main()
     auto time_point_next_period = std::chrono::steady_clock::now();
     while (true)
     {
-        XyVector_t power_command_recv_kW;
+        XyVector_t power_command_recv_kW = {};
         const int count_recv_bytes = recv(socket,
                                           reinterpret_cast<char*>(&power_command_recv_kW),
                                           sizeof(XyVector_t),

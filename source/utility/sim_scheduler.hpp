@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 #include <functional>
+#include <utility>
 
 //---------------------------------------------------------------------------------------------------------------------
 // PUBLIC TYPE DEFINITIONS
@@ -24,9 +25,9 @@ class SimScheduler_t
 {
   public:
     SimScheduler_t(const double time_step_s,
-                   const SimLoopFunc_t& SimLoopFunc) :
+                   SimLoopFunc_t SimLoopFunc) : // NOLINT(*identifier-naming)
         m_time_step_s{time_step_s},
-        m_SimLoopFunc{SimLoopFunc}
+        m_SimLoopFunc{std::move(SimLoopFunc)}
     {}
 
     void RunSimulation(const double time_interval_s)
@@ -41,5 +42,5 @@ class SimScheduler_t
 
   private:
     double m_time_step_s;
-    std::function<void(const double)> m_SimLoopFunc;
+    std::function<void(const double)> m_SimLoopFunc; // NOLINT(*identifier-naming)
 };
