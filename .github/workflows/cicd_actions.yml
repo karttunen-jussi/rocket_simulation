@@ -74,12 +74,8 @@ jobs:
         working-directory: .\build_gnu
         run: ctest
 
-      - name: Run connection test with RocketSocket and TCP test socket
+      - name: Install pytest and run tests with it
         if: matrix.compiler == 'gcc'
-        timeout-minutes: 1
         run: |
-          $rocket = Start-Process ".\build_gnu\source\rocket\RocketSocketServer.exe" -PassThru
-          $python = Start-Process "python" -ArgumentList ".\integration_test\tcp_test_socket.py" -PassThru
-          Start-Sleep -Seconds 15
-          $rocket.Kill()
-          $python.Kill()
+          pip install pytest
+          pytest ".\tests\test_socket_integration.py" -s

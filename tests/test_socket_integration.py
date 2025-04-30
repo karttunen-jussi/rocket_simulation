@@ -1,4 +1,3 @@
-
 import socket
 import struct
 import subprocess
@@ -6,7 +5,7 @@ import time
 
 
 def start_rocket():
-    exe_path = r"E:\Koodausharjoittelu\CPracBuild\source\rocket\RocketSocketServer.exe"
+    exe_path = "D:/a/rocket_simulation/rocket_simulation/build_gnu/source/rocket/RocketSocketServer.exe"
     return subprocess.Popen(
         [exe_path],
         stdout=subprocess.PIPE,
