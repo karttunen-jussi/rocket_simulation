@@ -53,11 +53,7 @@ jobs:
       - name: Execute unit tests
         run: ctest  --test-dir ".\build_gnu"
 
-      - name: Run connection test with RocketSocket and TCP test socket
-        timeout-minutes: 1
+      - name: Install pytest and run tests with it
         run: |
-          $rocket = Start-Process ".\build_gnu\source\rocket\RocketSocketServer.exe" -PassThru
-          $python = Start-Process "python" -ArgumentList ".\integration_test\tcp_test_socket.py" -PassThru
-          Start-Sleep -Seconds 15
-          $rocket.Kill()
-          $python.Kill()
+          pip install pytest
+          pytest ".\tests\test_socket_integration.py" -s
