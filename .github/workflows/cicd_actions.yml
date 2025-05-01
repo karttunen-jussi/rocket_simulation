@@ -19,7 +19,7 @@ jobs:
           choco install cppcheck
           refreshenv
           cppcheck --version
-          cd C:\Program Files\Cppcheck
+          cd "C:\Program Files\Cppcheck"
           ls
           cppcheck.exe --version
 
