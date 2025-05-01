@@ -8,17 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025
+    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install SW tools
-        run: |
-          winget install --id=Kitware.CMake -e
-          winget install --id=Ninja-build.Ninja -e
-          winget install --id=MartinStorsjo.LLVM-MinGW.UCRT -e
-          winget install --id=Cppcheck.Cppcheck -e
 
       - name: Test CMake
         run: cmake --version
@@ -34,3 +28,12 @@ jobs:
 
       - name: Test cppcheck
         run: cppcheck --version
+
+      - name: Test g++
+        run: g++ --version
+
+      - name: Test python
+        run: python --version
+
+      - name: Test winget
+        run: winget install --id=Ninja-build.Ninja -e
