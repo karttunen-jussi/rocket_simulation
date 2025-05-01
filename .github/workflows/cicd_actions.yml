@@ -50,6 +50,7 @@ jobs:
 
       - name: Run static analysis with Cppcheck
         run: |
+          $CppCheckExe = "C:\Program Files\Cppcheck\cppcheck.exe"
           & $CppCheckExe --version
           & $CppCheckExe --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
