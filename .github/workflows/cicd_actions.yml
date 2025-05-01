@@ -17,8 +17,9 @@ jobs:
       - name: Install missing tools
         run: |
           choco install cppcheck
-          $CppCheckExe = "C:\Program Files\Cppcheck\cppcheck.exe"
-          & $CppCheckExe --version
+          $CppCheckExe = \cppcheck.exe"
+          $env:Path = 'C:\Program Files\Cppcheck;' + $env:Path
+          cppcheck --version
 
       # - name: Configure CMake for Clang build
       #   run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
@@ -50,9 +51,9 @@ jobs:
 
       - name: Run static analysis with Cppcheck
         run: |
-          $CppCheckExe = "C:\Program Files\Cppcheck\cppcheck.exe"
-          & $CppCheckExe --version
-          & $CppCheckExe --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
+          $env:Path = "C:\Program Files\Cppcheck;" + $env:Path
+          cppcheck --version
+          cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
       # - name: Execute unit tests
       #   working-directory: .\build_gnu
