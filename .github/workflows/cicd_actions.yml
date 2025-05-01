@@ -17,8 +17,7 @@ jobs:
       - name: Install missing tools
         run: |
           choco install cppcheck
-          $CppCheckExe = \cppcheck.exe"
-          $env:Path = 'C:\Program Files\Cppcheck;' + $env:Path
+          $env:Path = "C:\Program Files\Cppcheck;" + $env:Path
           cppcheck --version
 
       # - name: Configure CMake for Clang build
