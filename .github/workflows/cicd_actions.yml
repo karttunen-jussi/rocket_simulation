@@ -21,7 +21,7 @@ jobs:
           cppcheck --version
           cd "C:\Program Files\Cppcheck"
           ls
-          cppcheck.exe --version
+          .\cppcheck.exe --version
 
       # - name: Configure CMake for Clang build
       #   run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
