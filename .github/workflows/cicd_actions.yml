@@ -16,8 +16,7 @@ jobs:
 
       - name: Install missing tools
         run: |
-          winget install --id=Cppcheck.Cppcheck --exact --accept-package-agreements --accept-source-agreements --location="./"
-          ls
+          choco install cppcheck
           cppcheck --version
 
       - name: Configure CMake for Clang build
