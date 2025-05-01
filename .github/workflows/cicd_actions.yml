@@ -8,46 +8,27 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler:
-          - llvm
-          - gcc
+    runs-on: windows-2025
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Cpp
-        uses: aminya/setup-cpp@v1
-        with:
-          compiler: ${{matrix.compiler}}
-          clang-format: true
-          clang-tidy: true
-          cmake: true
-          cppcheck: true
-          ninja: true
+      - name: Install missing SW tools
+        run: choco install cppcheck
 
       - name: Configure CMake for Clang build
-        if: matrix.compiler == 'llvm'
-        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=Clang++
+        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Build with Clang compiler
-        if: matrix.compiler == 'llvm'
         run: cmake --build .\build_clang
 
       - name: Configure CMake for GNU build
-        if: matrix.compiler == 'gcc'
         run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
 
       - name: Build with GNU compiler
-        if: matrix.compiler == 'gcc'
         run: cmake --build .\build_gnu
 
-      - name: Create .txt file that contains all .cpp and .hpp files
-        if: matrix.compiler == 'gcc'
+      - name: Create .txt file that contains list of all .cpp and .hpp files
         run: |
           $TargetFolder = ".\source"
           $OutputFile   = ".\cpplist.txt"
@@ -58,24 +39,21 @@ jobs:
                 Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
       - name: Check code style with clang-format
-        if: matrix.compiler == 'gcc'
         run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
 
       - name: Run static analysis with clang-tidy
-        if: matrix.compiler == 'llvm'
-        run: python ".\cicd_pipeline\python\run-clang-tidy.py" -config-file ".clang-tidy" -p ".\build_clang" -source-filter "^(?!.*?catch2).*$"
+        run: python ".\cicd_pipeline\python\run-clang-tidy.py" -quiet -config-file ".clang-tidy" -p ".\build_clang" -source-filter "^(?!.*?catch2).*$"
 
       - name: Run static analysis with Cppcheck
-        if: matrix.compiler == 'gcc'
-        run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
+        run: |
+          # Runner has another cppcheck.exe installed that is broken. To prevent calling it, add the correct version first in the Path.
+          $env:Path = "C:\Program Files\Cppcheck;" + $env:Path
+          cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
       - name: Execute unit tests
-        if: matrix.compiler == 'gcc'
-        working-directory: .\build_gnu
-        run: ctest
+        run: ctest  --test-dir ".\build_gnu"
 
       - name: Run connection test with RocketSocket and TCP test socket
-        if: matrix.compiler == 'gcc'
         timeout-minutes: 1
         run: |
           $rocket = Start-Process ".\build_gnu\source\rocket\RocketSocketServer.exe" -PassThru
