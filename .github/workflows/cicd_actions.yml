@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install missing tools
+        run: winget install --id=Cppcheck.Cppcheck --exact --accept-package-agreements --accept-source-agreements
+
       - name: Configure CMake for Clang build
         run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
 
