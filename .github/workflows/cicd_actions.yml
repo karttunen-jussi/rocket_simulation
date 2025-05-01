@@ -15,7 +15,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install missing tools
-        run: winget install --id=Cppcheck.Cppcheck --exact --accept-package-agreements --accept-source-agreements
+        run: |
+          winget install --id=Cppcheck.Cppcheck --exact --accept-package-agreements --accept-source-agreements
+          cppcheck --version
 
       - name: Configure CMake for Clang build
         run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
@@ -43,10 +45,12 @@ jobs:
         run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
 
       - name: Run static analysis with clang-tidy
-        run: python ".\cicd_pipeline\python\run-clang-tidy.py" -config-file ".clang-tidy" -p ".\build_clang" -source-filter "^(?!.*?catch2).*$"
+        run: python ".\cicd_pipeline\python\run-clang-tidy.py" -quiet -config-file ".clang-tidy" -p ".\build_clang" -source-filter "^(?!.*?catch2).*$"
 
       - name: Run static analysis with Cppcheck
-        run: cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
+        run: |
+          cppcheck --version
+          cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
       - name: Execute unit tests
         working-directory: .\build_gnu
