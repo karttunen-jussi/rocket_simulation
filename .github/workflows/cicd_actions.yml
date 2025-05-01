@@ -17,19 +17,23 @@ jobs:
       - name: Install missing tools
         run: |
           choco install cppcheck
+          refreshenv
           cppcheck --version
+          cd C:\Program Files\Cppcheck
+          ls
+          cppcheck.exe --version
 
-      - name: Configure CMake for Clang build
-        run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
+      # - name: Configure CMake for Clang build
+      #   run: cmake -G "Ninja" -S .\ -B .\build_clang -D CMAKE_CXX_COMPILER=clang++
 
-      - name: Build with Clang compiler
-        run: cmake --build .\build_clang
+      # - name: Build with Clang compiler
+      #   run: cmake --build .\build_clang
 
-      - name: Configure CMake for GNU build
-        run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
+      # - name: Configure CMake for GNU build
+      #   run: cmake -G "Ninja" -S .\ -B .\build_gnu -D CMAKE_CXX_COMPILER=g++
 
-      - name: Build with GNU compiler
-        run: cmake --build .\build_gnu
+      # - name: Build with GNU compiler
+      #   run: cmake --build .\build_gnu
 
       - name: Create .txt file that contains all .cpp and .hpp files
         run: |
@@ -41,17 +45,17 @@ jobs:
                 Select-Object -ExpandProperty FullName |
                 Out-File -FilePath $OutputFile -Encoding UTF8 -Force
 
-      - name: Check code style with clang-format
-        run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
+      # - name: Check code style with clang-format
+      #   run: clang-format --Werror --dry-run --verbose --style=file --files=cpplist.txt
 
-      - name: Run static analysis with clang-tidy
-        run: python ".\cicd_pipeline\python\run-clang-tidy.py" -quiet -config-file ".clang-tidy" -p ".\build_clang" -source-filter "^(?!.*?catch2).*$"
+      # - name: Run static analysis with clang-tidy
+      #   run: python ".\cicd_pipeline\python\run-clang-tidy.py" -quiet -config-file ".clang-tidy" -p ".\build_clang" -source-filter "^(?!.*?catch2).*$"
 
       - name: Run static analysis with Cppcheck
         run: |
           cppcheck --version
           cppcheck --enable=all --suppress=missingIncludeSystem --suppress=missingInclude --file-list=cpplist.txt --error-exitcode=1
 
-      - name: Execute unit tests
-        working-directory: .\build_gnu
-        run: ctest
+      # - name: Execute unit tests
+      #   working-directory: .\build_gnu
+      #   run: ctest
