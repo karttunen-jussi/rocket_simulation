@@ -56,4 +56,4 @@ jobs:
       - name: Install pytest and run tests with it
         run: |
           pip install pytest
-          pytest ".\tests\test_socket_integration.py" -s
+          pytest --rocket-path=D:/a/rocket_simulation/rocket_simulation/build_gnu/source/rocket/RocketSocketServer.exe -s

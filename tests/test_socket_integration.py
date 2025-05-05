@@ -2,19 +2,24 @@ import socket
 import struct
 import subprocess
 import time
+import pytest
+
+@pytest.fixture
+def rocket_path(request):
+    path_to_rocket = request.config.getoption("--rocket-path")
+    return path_to_rocket
 
 
-def start_rocket():
-    exe_path = "D:/a/rocket_simulation/rocket_simulation/build_gnu/source/rocket/RocketSocketServer.exe"
+def start_rocket(exe_path) -> None:
     return subprocess.Popen(
         [exe_path],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
 
-def test_rocket_socket_integration():
+def test_rocket_socket_integration(rocket_path):
     
-    rocket = start_rocket()
+    rocket = start_rocket(rocket_path)
     time.sleep(1)
 
     try:
