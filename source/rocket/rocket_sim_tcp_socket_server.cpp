@@ -51,10 +51,12 @@ static XyVector_t SimulateRocketNextPosition(XyVector_t power_command_kW)
     constexpr double time_step_s          = 1.0e-3;
     constexpr double time_update_period_s = 100.0e-3;
     constexpr double mass_rocket_kg       = 1000.0;
+    constexpr double position_limit_m     = 800.0;
 
     static Rocket_t rocket{
-        {.time_step_s    = time_step_s,
-         .mass_rocket_kg = mass_rocket_kg}
+        {.time_step_s      = time_step_s,
+         .mass_rocket_kg   = mass_rocket_kg,
+         .position_limit_m = position_limit_m}
     };
 
     double time_elapsed_s = 0.0;

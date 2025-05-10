@@ -61,12 +61,14 @@ TEST_CASE("Accelerating rocket with constant power")
     constexpr double mass_rocket_kg    = 1000.0;
     constexpr double power_rocket_x_kW = 10.0;
     constexpr double power_rocket_y_kW = 5.0;
+    constexpr double position_limit_m  = 1.0e6;
 
     SECTION("Kinetic energy")
     {
         Rocket_t rocket{
-            {.time_step_s    = time_step_s,
-             .mass_rocket_kg = mass_rocket_kg}
+            {.time_step_s      = time_step_s,
+             .mass_rocket_kg   = mass_rocket_kg,
+             .position_limit_m = position_limit_m}
         };
 
         // Define the simulation loop function
@@ -101,8 +103,9 @@ TEST_CASE("Accelerating rocket with constant power")
     SECTION("Speed")
     {
         Rocket_t rocket{
-            {.time_step_s    = time_step_s,
-             .mass_rocket_kg = mass_rocket_kg}
+            {.time_step_s      = time_step_s,
+             .mass_rocket_kg   = mass_rocket_kg,
+             .position_limit_m = position_limit_m}
         };
 
         // Define the simulation loop function
@@ -141,8 +144,9 @@ TEST_CASE("Accelerating rocket with constant power")
     SECTION("Position")
     {
         Rocket_t rocket{
-            {.time_step_s    = time_step_s,
-             .mass_rocket_kg = mass_rocket_kg}
+            {.time_step_s      = time_step_s,
+             .mass_rocket_kg   = mass_rocket_kg,
+             .position_limit_m = position_limit_m}
         };
 
         // Define the simulation loop function

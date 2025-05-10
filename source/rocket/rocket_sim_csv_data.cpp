@@ -23,6 +23,7 @@ int main()
     constexpr double time_step_s         = 1.0e-3;
     constexpr double time_total_length_s = 160.0;
     constexpr double mass_rocket_kg      = 1000.0;
+    constexpr double position_limit_m    = 1.0e6;
 
     // Rocket simulation data points are logged into this csv file
     std::ofstream csv_file{"rocket_sim_data_points.csv"};
@@ -57,8 +58,9 @@ int main()
 
     // Create the instance of the rocket class
     Rocket_t rocket{
-        {.time_step_s    = time_step_s,
-         .mass_rocket_kg = mass_rocket_kg}
+        {.time_step_s      = time_step_s,
+         .mass_rocket_kg   = mass_rocket_kg,
+         .position_limit_m = position_limit_m}
     };
 
     // Define the simulation loop function

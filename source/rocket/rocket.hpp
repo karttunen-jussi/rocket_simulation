@@ -11,7 +11,7 @@
 #include "utility/numerical_integration.hpp"
 
 #include <algorithm>
-#include <array>
+#include <cassert>
 #include <cmath>
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -32,6 +32,7 @@ struct RocketPars_t
 {
     double time_step_s;
     double mass_rocket_kg;
+    double position_limit_m;
 };
 
 struct XyVector_t
@@ -55,9 +56,13 @@ class Rocket_t
   public:
     explicit Rocket_t(const RocketPars_t& pars) :
         m_mass_rocket_kg{pars.mass_rocket_kg},
+        m_position_limit_m{pars.position_limit_m},
         m_x_axis{.speed_m_s{pars.time_step_s}, .position_m{pars.time_step_s}},
         m_y_axis{.speed_m_s{pars.time_step_s}, .position_m{pars.time_step_s}}
-    {}
+    {
+        assert(pars.mass_rocket_kg > 0.0);
+        assert(pars.position_limit_m > 0.0);
+    }
 
     void UpdateState(const XyVector_t& power_kW)
     {
@@ -91,13 +96,25 @@ class Rocket_t
         const double acceleration_m_s2 = force_N / m_mass_rocket_kg;
 
         // Speed is integral of acceleration
-        axis.speed_m_s.UpdateIntegral(acceleration_m_s2);
+        const double current_speed_m_s = axis.speed_m_s.UpdateIntegral(acceleration_m_s2);
 
         // Position is integral of speed
-        axis.position_m.UpdateIntegral(axis.speed_m_s.GetValue());
+        const double current_position_m = axis.position_m.UpdateIntegral(current_speed_m_s);
+
+        if (current_position_m > m_position_limit_m)
+        {
+            const double updated_position_m = current_position_m - m_position_limit_m;
+            axis.position_m.SetValue(updated_position_m);
+        }
+        else if (current_position_m < 0.0)
+        {
+            const double updated_position_m = current_position_m + m_position_limit_m;
+            axis.position_m.SetValue(updated_position_m);
+        }
     }
 
     double m_mass_rocket_kg;
+    double m_position_limit_m;
     AxisState_t m_x_axis;
     AxisState_t m_y_axis;
 };

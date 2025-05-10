@@ -17,13 +17,15 @@
 
 int main()
 {
-    constexpr double time_step_s    = 1.0e-3;
-    constexpr double mass_rocket_kg = 1000.0;
+    constexpr double time_step_s      = 1.0e-3;
+    constexpr double mass_rocket_kg   = 1000.0;
+    constexpr double position_limit_m = 800.0;
 
     // Create the instance of the rocket class
     Rocket_t rocket{
-        {.time_step_s    = time_step_s,
-         .mass_rocket_kg = mass_rocket_kg}
+        {.time_step_s      = time_step_s,
+         .mass_rocket_kg   = mass_rocket_kg,
+         .position_limit_m = position_limit_m}
     };
 
     // Define the execution loop function

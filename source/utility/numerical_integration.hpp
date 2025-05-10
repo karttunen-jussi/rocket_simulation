@@ -15,16 +15,22 @@ class Integrator_t
         m_time_step_s{time_step_s}
     {}
 
-    void UpdateIntegral(const double input)
+    double UpdateIntegral(const double input)
     {
         // Use Trapezoidal rule for the numerical integration
         m_integrated_result += m_time_step_s * (input + m_previous_input) * 0.5;
         m_previous_input     = input;
+        return m_integrated_result;
     }
 
     double GetValue() const
     {
         return m_integrated_result;
+    }
+
+    void SetValue(const double modified_integral_value)
+    {
+        m_integrated_result = modified_integral_value;
     }
 
   private:
