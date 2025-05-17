@@ -10,6 +10,7 @@
 #include "utility/sim_scheduler.hpp"
 
 #include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 //---------------------------------------------------------------------------------------------------------------------
 // PRIVATE (STATIC) FUNCTION DEFINITIONS
@@ -180,5 +181,95 @@ TEST_CASE("Accelerating rocket with constant power")
             REQUIRE_THAT(result_position_x_m, Near(expected_position_x_m));
             REQUIRE_THAT(result_position_y_m, Near(expected_position_y_m));
         }
+    }
+}
+
+TEST_CASE("Position limitations")
+{
+    constexpr double time_step_s      = 1.0e-3;
+    constexpr double time_interval_s  = 10.0;
+    constexpr double mass_rocket_kg   = 1000.0;
+    constexpr double position_limit_m = 10.0;
+
+    Rocket_t rocket{
+        {.time_step_s      = time_step_s,
+         .mass_rocket_kg   = mass_rocket_kg,
+         .position_limit_m = position_limit_m}
+    };
+
+    SECTION("X-axis positive limit")
+    {
+        constexpr double power_rocket_x_kW = 10.0;
+        constexpr double power_rocket_y_kW = 0.0;
+        double previous_position_x_m       = 0.0;
+        bool limit_activated               = false;
+
+        auto SimLoopFunc = [&rocket, &previous_position_x_m, &limit_activated](const double time_elapsed_s) // NOLINT(*identifier-naming)
+        {
+            (void)time_elapsed_s;
+
+            const XyVector_t power_kW = {.x_axis = power_rocket_x_kW,
+                                         .y_axis = power_rocket_y_kW};
+
+            rocket.UpdateState(power_kW);
+
+            const double present_position_x_m = rocket.GetPosition_m().x_axis;
+            const double delta_position_x_m   = present_position_x_m - previous_position_x_m;
+
+            if (delta_position_x_m < 0.0)
+            {
+                REQUIRE_THAT(previous_position_x_m, WithinAbs(position_limit_m, 0.02));
+                REQUIRE_THAT(present_position_x_m, WithinAbs(0.0, 0.01));
+                limit_activated = true;
+            }
+            else if (present_position_x_m > position_limit_m)
+            {
+                REQUIRE(false);
+            }
+            previous_position_x_m = present_position_x_m;
+        };
+
+        SimScheduler_t scheduler{time_step_s, SimLoopFunc};
+
+        scheduler.RunSimulation(time_interval_s);
+        REQUIRE(limit_activated);
+    }
+
+    SECTION("X-axis zero limit")
+    {
+        constexpr double power_rocket_x_kW = -10.0;
+        constexpr double power_rocket_y_kW = 0.0;
+        double previous_position_x_m       = 0.0;
+        bool limit_activated               = false;
+
+        auto SimLoopFunc = [&rocket, &previous_position_x_m, &limit_activated](const double time_elapsed_s) // NOLINT(*identifier-naming)
+        {
+            (void)time_elapsed_s;
+
+            const XyVector_t power_kW = {.x_axis = power_rocket_x_kW,
+                                         .y_axis = power_rocket_y_kW};
+
+            rocket.UpdateState(power_kW);
+
+            const double present_position_x_m = rocket.GetPosition_m().x_axis;
+            const double delta_position_x_m   = present_position_x_m - previous_position_x_m;
+
+            if (delta_position_x_m > 0.0)
+            {
+                REQUIRE_THAT(previous_position_x_m, WithinAbs(0.0, 0.02));
+                REQUIRE_THAT(present_position_x_m, WithinAbs(position_limit_m, 0.01));
+                limit_activated = true;
+            }
+            else if (present_position_x_m < 0.0)
+            {
+                REQUIRE(false);
+            }
+            previous_position_x_m = present_position_x_m;
+        };
+
+        SimScheduler_t scheduler{time_step_s, SimLoopFunc};
+
+        scheduler.RunSimulation(time_interval_s);
+        REQUIRE(limit_activated);
     }
 }
